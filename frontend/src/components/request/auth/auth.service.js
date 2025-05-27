@@ -1,5 +1,4 @@
 import axios from "axios";
-import { handleError, handleSuccess } from "../../../utils/Error";
 
 const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -74,4 +73,11 @@ export const updateprofile = async (formData) => {
     });
     return response.data;
     
+};
+
+export const viewprofile = async () => {
+    const response = await axios.get(`${API_BASE_URL}auth/view-profile`, {
+        withCredentials: true,
+    });
+    return response.data;    
 };

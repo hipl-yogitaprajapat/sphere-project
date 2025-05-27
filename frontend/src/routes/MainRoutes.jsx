@@ -10,6 +10,10 @@ const Tester = lazy(() => import('../components/tester/Tester'));
 const Admin = lazy(() => import('../components/admin/Admin'));
 const Designer = lazy(() => import('../components/designer/Designer'));
 const UpdateProfile = lazy(() => import('../pages/UpdateProfile'));
+const ViewProfile = lazy(() => import('../pages/ViewProfile'));
+const UserForm = lazy(() => import('../components/admin/form/UserForm'));
+const CreateProject = lazy(() => import('../components/admin/form/CreateProject'));
+const ViewProjects = lazy(() => import('../components/admin/ViewProjects'));
 
 
 const MainRoutes = [
@@ -24,6 +28,11 @@ const MainRoutes = [
   { path: '/admin', Component: Admin, protected: true },
   { path: '/designer', Component: Designer, protected: true },
   { path: '/update-profile', Component: UpdateProfile, protected: true },
+  { path: '/view-profile', Component: ViewProfile, protected: true },
+  { path: '/user-form', Component: UserForm, protected: true },
+  { path: '/create-project', Component: CreateProject, protected: true },
+  { path: '/view-projects', Component: ViewProjects, protected: true },
+
 
 ];
 

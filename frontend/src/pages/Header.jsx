@@ -3,8 +3,10 @@ import { useDispatch } from 'react-redux';
 import { handleError, handleSuccess } from '../utils/Error';
 import { LogoutUser } from '../components/redux/slice/authSlice';
 import { ToastContainer } from 'react-toastify';
+import { useSidebar } from '../components/contextapi/SidebarContext';
 
-const Header = ({ onToggleSidebar }) => {
+const Header = () => {
+    const { toggleSidebar } = useSidebar();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ const Header = ({ onToggleSidebar }) => {
                             {/* <!-- ======= Menu collapse Icon ===== --> */}
                             <li class="pc-h-item pc-sidebar-collapse">
                                 <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
-                                    <i onClick={onToggleSidebar} class="ti ti-menu-2"></i>
+                                    <i onClick={toggleSidebar} class="ti ti-menu-2"></i>
                                 </a>
                             </li>
                             <li class="pc-h-item pc-sidebar-popup">
@@ -131,7 +133,7 @@ const Header = ({ onToggleSidebar }) => {
                                                 <i class="ti ti-edit-circle"></i>
                                                 <span>Edit Profile</span>
                                             </Link>
-                                            <Link to="/dashboard/view-profile" href="#!" class="dropdown-item">
+                                            <Link to="/view-profile" href="#!" class="dropdown-item">
                                                 <i class="ti ti-user"></i>
                                                 <span>View Profile</span>
                                             </Link>

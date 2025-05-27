@@ -10,6 +10,7 @@ const initialState = {
     token: null,
     profile:null,
 }
+
 // const url = import.meta.env.VITE_APP_API_URL;
 
 export const SignupUser = createAsyncThunk('signup', async (registerInfo,{ rejectWithValue }) => {
@@ -75,34 +76,6 @@ export const googleAuth = createAsyncThunk('googleAuth', async (code,{ rejectWit
   }
 });
 
-// export const UpdateUserProfile = createAsyncThunk("updateprofile", async (updateInfo, { rejectWithValue }) => {
-//     console.log(updateInfo,"updateInfooooo");
-//     try {
-//           const formData = new FormData();
-//       formData.append("firstName", updateInfo.firstName);
-//       formData.append("lastName", updateInfo.lastName);
-//       formData.append("company", updateInfo.company);
-//       formData.append("password", updateInfo.password);
-//       if (updateInfo.image) {
-//         formData.append("image", updateInfo.image);
-//       }
-//         const response = await fetch(url + "auth/update-profile", {
-//             method: "PUT",
-//              credentials: 'include', 
-//             body:formData
-//         })
-//         console.log(response,"responseeee");
-        
-//         const result = await response.json();
-//            if (!response.ok) {
-//             return rejectWithValue(result.message);
-//         }
-//         return result
-//     } catch (error) {
-//         return rejectWithValue(error.message || "Something went wrong");
-//     }
-// })
-
 export const UpdateUserProfile = createAsyncThunk('updateprofile', async (formData,{ rejectWithValue }) => {
       try {
     const response = await services.updateprofile(formData);
@@ -113,23 +86,13 @@ export const UpdateUserProfile = createAsyncThunk('updateprofile', async (formDa
   }
 });
 
-export const viewProfile = createAsyncThunk("viewprofile", async (_, { rejectWithValue }) => {
-  try {
-    const response = await fetch(url + "auth/view-profile", {
-      method: 'GET',
-      credentials: 'include',
-    });
-     console.log(response,"res");
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      return rejectWithValue(result.message);
-    }
-
-    return result.user;
-  } catch (err) {
-    return rejectWithValue(err.message || "Failed to load profile");
+export const viewProfile = createAsyncThunk('viewprofile', async (_,{ rejectWithValue }) => {
+      try {
+    const response = await services.viewprofile();
+       return response  
+  } catch (error) {
+    const message = error.response?.data?.message || "View User Profile failed";
+      return rejectWithValue(message);
   }
 });
 

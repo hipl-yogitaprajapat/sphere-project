@@ -9,7 +9,7 @@ import fs from "fs";
 export const signup = async (req, res) => {
     const { firstName, lastName, company, email, password,role } = req.body;
     try {
-        if (!firstName || !lastName || !company || !email || !password) {
+        if (!firstName || !lastName || !company || !email || !password || !role) {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
         if (password.length < 6) {
