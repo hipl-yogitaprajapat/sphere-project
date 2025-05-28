@@ -6,8 +6,9 @@ import jwt from "jsonwebtoken"
 import { oauth2client } from "../lib/googleConfig.js";
 import axios from "axios";
 import fs from "fs";
+import path from "path";
 export const signup = async (req, res) => {
-    const { firstName, lastName, company, email, password,role } = req.body;
+    const { firstName, lastName, company, email, password, role } = req.body;
     try {
         if (!firstName || !lastName || !company || !email || !password || !role) {
             return res.status(400).json({ message: "All fields are required", success: false })
@@ -59,8 +60,11 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
+        if (!email || !password) {
+            return res.status(400).json({ message: "All fields are required", success: false })
+        }
         const user = await User.findOne({ email });
-        console.log(user,"user");
+        console.log(user, "user");
 
         if (!user) {
             res.status(400).json({ message: "Invaild Credentials", success: false })
@@ -71,7 +75,7 @@ export const login = async (req, res) => {
         if (!isPasswordCorrect) {
             res.status(400).json({ message: "Invaild Credentials", success: false })
         }
-        const jwtToken = generateToken(user._id,user.role, res);
+        const jwtToken = generateToken(user._id, user.role, res);
 
         res.status(200).json({
             // _id: user._id,
@@ -93,33 +97,33 @@ export const login = async (req, res) => {
     }
 }
 
-export const forgetpassword = async(req, res) => {
+export const forgetpassword = async (req, res) => {
     const { email } = req.body;
     try {
         if (email) {
-            const isUser = await User.findOne({ email });            
+            const isUser = await User.findOne({ email });
             if (isUser) {
                 const jwtToken = jwt.sign({ userId: isUser._id }, process.env.JWT_SECRET, {
                     expiresIn: "5m"
                 })
 
-                   const link = `http://localhost:5173/reset-password/${isUser._id}/${jwtToken}`;
-                
+                const link = `http://localhost:5173/reset-password/${isUser._id}/${jwtToken}`;
+
                 const transporter = nodemailer.createTransport({
                     service: "gmail",
-                     host: "smtp.gmail.com",
-                     port: 465,
+                    host: "smtp.gmail.com",
+                    port: 465,
                     auth: {
                         user: process.env.EMAIL,
                         pass: process.env.EMAIL_PASSWORD,
                     }
-                })                
+                })
 
                 const mailOptions = {
                     from: process.env.EMAIL,
                     to: email,
                     subject: "Reset Password",
-              html: `<h1>Reset Your Password</h1>
+                    html: `<h1>Reset Your Password</h1>
     <p>Click on the following link to reset your password:</p>
  <p><a href="${link}">Reset Password</a></p>
     <p>The link will expire in 10 minutes.</p>
@@ -148,162 +152,179 @@ export const forgetpassword = async(req, res) => {
 export const resetpassword = async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
     const { id, token } = req.params;
-    
+
     try {
         if (newPassword && confirmPassword && id && token) {
             if (newPassword === confirmPassword) {
-                const decodedToken = jwt.verify(token, process.env.JWT_SECRET)                
+                const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
                 if (decodedToken) {
-                const user = await User.findById(id)
-                const salt = await bcrypt.genSalt(10);
-                const hashPassword = await bcrypt.hash(newPassword, salt)
-                const isSuccess = await User.findByIdAndUpdate(user._id,{
-                    $set:{
-                      password:hashPassword
+                    const user = await User.findById(id)
+                    const salt = await bcrypt.genSalt(10);
+                    const hashPassword = await bcrypt.hash(newPassword, salt)
+                    const isSuccess = await User.findByIdAndUpdate(user._id, {
+                        $set: {
+                            password: hashPassword
+                        }
+                    })
+                    if (isSuccess) {
+                        return res.status(200).json({ message: "Password has been changes successfully", success: true })
                     }
-                })
-                if(isSuccess){
-                    return res.status(200).json({message:"Password has been changes successfully",success: true })
                 }
-                }
-                else{
-                    return res.status(400).send({ message: "Link has been expired" ,success: false });
+                else {
+                    return res.status(400).send({ message: "Link has been expired", success: false });
 
-                }
-
-                } else {
-                    res.status(400).json({ message: "Password and confirm password does not matched", success: false })
                 }
 
             } else {
-                res.status(400).json({ message: "All fields are required", success: false })
+                res.status(400).json({ message: "Password and confirm password does not matched", success: false })
             }
 
-        } catch (error) {
-            res.status(500).json({ message: "Internal server error", success: false })
+        } else {
+            res.status(400).json({ message: "All fields are required", success: false })
         }
 
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", success: false })
     }
+
+}
 
 
 export const logout = (req, res) => {
-        try {
-            res.cookie("jwt", "", { maxAge: 0 });
-            res.status(200).json({ message: "Loggout successfully" })
-        } catch (error) {
-            console.log("Error in Logout contoller", error.message);
-            res.status(500).json({ message: "Internal server error" })
+    try {
+        res.cookie("jwt", "", { maxAge: 0 });
+        res.status(200).json({ message: "Loggout successfully" })
+    } catch (error) {
+        console.log("Error in Logout contoller", error.message);
+        res.status(500).json({ message: "Internal server error" })
 
-        }
     }
+}
 
 export const checkAuth = (req, res) => {
-        try {
-            res.status(200).json(req.user)
-        } catch (error) {
-            console.log("Error in CheckAuth contoller", error.message);
-            res.status(500).json({ message: "Internal server error" })
-
-        }
-    }
-
-export const googleLogin = async(req,res)=>{
     try {
-    const {code} = req.query;
-    console.log(code,"code");
-    
-    const googleRes = await oauth2client.getToken(code);
-    oauth2client.setCredentials(googleRes.tokens)
-    const userRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`)    
-    const {email,name} = userRes.data;
-    let user = await User.findOne({email});
-    if(!user){
-        user = await User.create({
-            name,
-            email
-        })
-    }
-       const {_id} = user;
-       const token = jwt.sign({_id,email }, process.env.JWT_SECRET, {
-                    expiresIn: "12h"
-                })
-   return res.status(200).json({message:"Google login successfully",success: true,user,token })
-
-} catch (error) {
-    console.log(error,"error");
+        res.status(200).json(req.user)
+    } catch (error) {
+        console.log("Error in CheckAuth contoller", error.message);
         res.status(500).json({ message: "Internal server error" })
-}
+
     }
+}
+
+export const googleLogin = async (req, res) => {
+    try {
+        const { code } = req.query;
+        console.log(code, "code");
+
+        const googleRes = await oauth2client.getToken(code);
+        oauth2client.setCredentials(googleRes.tokens)
+        const userRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`)
+        const { email, name } = userRes.data;
+        let user = await User.findOne({ email });
+        if (!user) {
+            user = await User.create({
+                name,
+                email
+            })
+        }
+        const { _id } = user;
+        const token = jwt.sign({ _id, email }, process.env.JWT_SECRET, {
+            expiresIn: "12h"
+        })
+        return res.status(200).json({ message: "Google login successfully", success: true, user, token })
+
+    } catch (error) {
+        console.log(error, "error");
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
 
 
 export const updateProfile = async (req, res) => {
-  try {
-    const userId = req.user._id;    
-    const { firstName, lastName, company, password } = req.body;
-     if (!firstName || !lastName || !company || !password || !req.file) {
+    try {
+        const userId = req.user._id;
+        const { firstName, lastName, company, password } = req.body;
+        if (!firstName || !lastName || !company || !password || !req.file) {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
+        console.log(req.file, "image")
 
-    const user = await User.findById(userId);    
+        if (req.file) {
+            // Validate file type
+            const allowedTypes = ['.jpg', '.jpeg', '.png'];
+            const ext = path.extname(req.file.originalname).toLowerCase();
+            if (!allowedTypes.includes(ext)) {
+                fs.unlinkSync(req.file.path);
+                return res.status(400).json({ message: "Only JPG, JPEG, and PNG images are allowed", success: false });
+            }
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
+            //image is less than 1MB ||  image size (1MB = 1048576 bytes)
+            if (req.file.size > 1 * 1024 * 1024) {
+                fs.unlinkSync(req.file.path);
+                return res.status(400).json({ message: "Image must not be larger than 1MB", success: false });
+            }
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (company) user.company = company;
+
+
+        if (password) {
+            if (password.length < 6) {
+                return res.status(400).json({ message: "Password must be at least 6 characters", success: false });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        if (req.file) {
+            console.log(req.file, "img");
+
+            if (user.image && fs.existsSync(`uploads/${user.image}`)) {
+                fs.unlinkSync(`uploads/${user.image}`);
+            }
+            user.image = req.file.filename;
+        }
+
+        await user.save();
+
+        return res.status(200).json({ message: "Profile updated successfully", success: true });
+    } catch (error) {
+        console.error("Error updating profile:", error.message);
+        return res.status(500).json({ message: "Internal server error", success: false });
     }
-
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (company) user.company = company;
-
-
-    if (password) {
-      if (password.length < 6) {
-        return res.status(400).json({ message: "Password must be at least 6 characters", success: false });
-      }
-
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-    }
-
-    if (req.file) {  
-        console.log(req.file,"img");
-              
-      if (user.image && fs.existsSync(`uploads/${user.image}`)) {
-        fs.unlinkSync(`uploads/${user.image}`);
-      }
-      user.image = req.file.filename;
-    }
-
-    await user.save();
-
-    return res.status(200).json({ message: "Profile updated successfully", success: true });
-  } catch (error) {
-    console.error("Error updating profile:", error.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
 };
 
 export const viewProfile = async (req, res) => {
-  try {
-    const userId = req.user._id;
+    try {
+        const userId = req.user._id;
 
-    const user = await User.findById(userId).select('-password');
+        const user = await User.findById(userId).select('-password');
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                company: user.company,
+                image: user.image,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching profile:", error.message);
+        return res.status(500).json({ message: "Internal server error", success: false });
     }
-
-    return res.status(200).json({
-      success: true,
-      user: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        company: user.company,
-        image: user.image,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error("Error fetching profile:", error.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
 };

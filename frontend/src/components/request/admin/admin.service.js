@@ -32,3 +32,17 @@ export const viewprojects = async () => {
     });
     return response.data; 
 };
+
+export const editproject = async ({id,editProjectInfo}) => { 
+    const response = await axios.put(`${API_BASE_URL}admin/edit-project/${id}`,editProjectInfo, {
+        withCredentials: true,
+    });
+    return response.data;  
+};
+
+export const deleteproject = async ({id}) => { 
+    const response = await axios.delete(`${API_BASE_URL}admin/delete-project/${id}`, {
+        withCredentials: true,
+    });
+    return response.data;    
+};

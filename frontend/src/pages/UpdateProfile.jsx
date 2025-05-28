@@ -15,8 +15,6 @@ const UpdateProfile = () => {
     image:"",
     preview: ''
   })
-  console.log(updateInfo, "updateInfo");
-
 
   const dispatch = useDispatch()
   const navigate = useNavigate();

@@ -2,7 +2,7 @@ import Project from "../models/newproject.js";
 import User from "../models/user.model.js"
 import bcrypt from "bcrypt";
 export const adminUsersForm = async (req, res) => {
-    const { firstName, lastName, company, email, password,role } = req.body;
+    const { firstName, lastName, company, email, password, role } = req.body;
     try {
         if (!firstName || !lastName || !company || !email || !password || !role) {
             return res.status(400).json({ message: "All fields are required", success: false })
@@ -25,7 +25,7 @@ export const adminUsersForm = async (req, res) => {
             role,
             password: hashPassword
         })
-        console.log(newUser,"newUser");
+        console.log(newUser, "newUser");
 
         if (newUser) {
             await newUser.save();
@@ -45,20 +45,19 @@ export const adminUsersForm = async (req, res) => {
     }
 }
 
-
-export const createProject = async(req,res)=>{
-  const { projectname,description, issue,priority } = req.body;
+export const createProject = async (req, res) => {
+    const { projectname, description, issue, priority, status } = req.body;
     try {
-        if (!projectname || !description || !priority || !issue) {
+        if (!projectname || !description || !priority || !issue || !status) {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
         const newProject = new Project({
             projectname,
             description,
             priority,
-            issue
+            issue,
+            status
         })
-        console.log(newProject,"newProject");
 
         if (newProject) {
             await newProject.save();
@@ -75,17 +74,67 @@ export const createProject = async(req,res)=>{
     }
 }
 
-export const viewProjects = async (req, res) => {    
-  try {
-   const projects = await Project.find();
+export const viewProjects = async (req, res) => {
+    try {
+        const projects = await Project.find();
 
-    if (!projects || projects.length === 0) {
-      return res.status(404).json({ message: "No projects found", success: false });
+        if (!projects || projects.length === 0) {
+            return res.status(404).json({ message: "No projects found", success: false });
+        }
+
+        return res.status(200).json({ message: "Projects fetched successfully", success: true, data: projects });
+    } catch (error) {
+        console.error("Error fetching project:", error.message);
+        return res.status(500).json({ message: "Internal server error", success: false });
     }
-    
-    return res.status(200).json({message: "Projects fetched successfully",success: true, data: projects});
-  } catch (error) {
-    console.error("Error fetching project:", error.message);
-    return res.status(500).json({ message: "Internal server error", success: false });
-  }
 };
+
+export const editProject = async (req, res) => {
+    const { projectname, description, issue, priority, status } = req.body;
+    const { id } = req.params;    
+
+    try {
+        if (!projectname || !description || !priority || !issue || !status) {
+            return res.status(400).json({ message: "All fields are required", success: false })
+        }
+
+        const updateProject = await Project.findByIdAndUpdate(
+            id,
+            { projectname, description, issue, priority, status },
+            { new: true }
+        )
+        
+        if (!updateProject) {
+            return res.status(404).json({ message: "Project not found", success: false });
+        }
+
+        return res.status(200).json({
+            message: "Project updated successfully",
+            success: true,
+            updateProject,
+        });
+
+    } catch (error) {
+        console.log("error in edit project controller", error.message);
+        res.status(500).json({ message: "Internal server error", success: false })
+    }
+};
+
+export const deleteProject = async (req, res) => {
+    const { id } = req.params;    
+    try {
+        const deleteProject = await Project.findByIdAndDelete(id)
+         if (!deleteProject) return res.status(404).json({message: "Project not found",success: false});
+    
+        return res.status(200).json({
+            message: "Project deleted successfully",
+            success: true,
+            deleteProject,
+        });
+
+    } catch (error) {
+        console.log("error in delete project controller", error.message);
+        res.status(500).json({ message: "Internal server error", success: false })
+    }
+};
+

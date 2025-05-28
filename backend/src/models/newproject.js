@@ -14,6 +14,10 @@ const projectSchema = new mongoose.Schema(
             type:String,
             enum:["high","medium","low"],
         },
+         status:{
+            type:String,
+            enum:["active","hold","complete"],
+        },
     },
     { timestamps: true },
 ) 

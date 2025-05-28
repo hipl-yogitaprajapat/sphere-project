@@ -13,10 +13,7 @@ const Admin = () => {
         <div className="pc-content">
           <div className="page-header">
             <div className="page-block d-flex justify-content-between align-items-center">
-              <h1 className="mb-0">Dashboard</h1>
-              <button onClick={()=>navigate("/create-project")} className="btn btn-sm btn-primary">
-                + New Project
-              </button>
+              <h2 className="mb-0">Dashboard</h2>
             </div>
           </div>
           <ViewProjects/>

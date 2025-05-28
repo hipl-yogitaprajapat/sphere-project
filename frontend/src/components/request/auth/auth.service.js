@@ -55,7 +55,6 @@ export const resetpassword = async ({ input, id, token }) => {
     return response.data;
 };
 
-
 export const googlelogin = async(code) => {  
     const response = await axios.get(`${API_BASE_URL}auth/google?code=${code}`, {
         headers: {

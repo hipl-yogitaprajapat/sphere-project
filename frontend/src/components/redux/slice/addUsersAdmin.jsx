@@ -42,6 +42,27 @@ export const viewProjects = createAsyncThunk('viewprojects', async (_,{ rejectWi
   }
 });
 
+export const editProject = createAsyncThunk('editproject', async ({id,editProjectInfo},{ rejectWithValue }) => {
+      try {
+    const response = await services.editproject({id,editProjectInfo});
+       return response 
+    
+  } catch (error) {
+    const message = error.response?.data?.message || "Edit User Projects failed";
+      return rejectWithValue(message);
+  }
+});
+
+export const deleteProject = createAsyncThunk('deleteproject', async ({id},{ rejectWithValue }) => {
+      try {
+    const response = await services.deleteproject({id});
+       return response 
+    
+  } catch (error) {
+    const message = error.response?.data?.message || "Edit User Projects failed";
+      return rejectWithValue(message);
+  }
+});
 
 const adimnUserSlice = createSlice({
     name: "admin",
@@ -70,7 +91,7 @@ const adimnUserSlice = createSlice({
             state.loading = true
             state.error = action.payload;
         })
-                builder.addCase(createNewProject.pending, (state) => {
+        builder.addCase(createNewProject.pending, (state) => {
             state.loading = true;
             state.error = null;
             state.success = null;
@@ -100,6 +121,36 @@ const adimnUserSlice = createSlice({
         builder.addCase(viewProjects.rejected, (state, action) => {
                     state.loading = false
                     state.error = action.payload;
+        })
+        builder.addCase(editProject.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(editProject.fulfilled, (state, action) => {                        
+            state.loading = false;
+            state.success = true;
+            state.message = action.payload.message;
+        })
+        builder.addCase(editProject.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
+        })
+        builder.addCase(deleteProject.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(deleteProject.fulfilled, (state, action) => {                        
+            state.loading = false;
+            state.success = true;
+            state.message = action.payload.message;
+        })
+        builder.addCase(deleteProject.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
         })
     }
 })

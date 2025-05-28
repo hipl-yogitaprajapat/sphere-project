@@ -19,14 +19,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (['.jpg', '.jpeg', '.png'].includes(ext)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only images are allowed"));
-    }
-  }
 });
 
 export default upload;
