@@ -4,6 +4,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import clientRoutes from "./routes/client.route.js";
 import adminFormsRoutes from "./routes/adminform.route.js";
+import taskRoute from "./routes/task.route.js";
+import getAllUser from "./routes/user.route.js";
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 
@@ -22,6 +24,8 @@ app.use(
 app.use("/api/auth",authRoutes)
 app.use("/api/client",clientRoutes)
 app.use("/api/admin",adminFormsRoutes)
+app.use("/api/task",taskRoute)
+app.use("/api",getAllUser)
 app.use("/uploads", express.static("uploads"));
 app.listen(PORT,()=>{
     console.log("Server is running on Port : " + PORT);

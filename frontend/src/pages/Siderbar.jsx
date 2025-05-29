@@ -63,6 +63,22 @@ const Sidebar = () => {
                       <span class="pc-mtext">View Projects</span>
                     </Link>
                   </li>
+                      <li class="pc-item pc-caption">
+                    <label>Task Management</label>
+                    <i class="ti ti-dashboard"></i>
+                  </li>
+                    <li class="pc-item">
+                    <Link to="/create-task" class="pc-link">
+                      <span class="pc-micon"><i class="ti ti-typography"></i></span>
+                      <span class="pc-mtext"> New Task</span>
+                    </Link>
+                  </li>
+                    <li class="pc-item">
+                    <Link to="/view-task" class="pc-link">
+                      <span class="pc-micon"><i class="ti ti-typography"></i></span>
+                      <span class="pc-mtext">View Task</span>
+                    </Link>
+                  </li>
                 </>
               )}
             </ul>

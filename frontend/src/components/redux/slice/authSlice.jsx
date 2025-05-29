@@ -3,7 +3,7 @@ import * as services from '../../request/auth'
 
 const initialState = {
     message: "",
-    // user: null,
+    user: [],
     loading: false,
     error: null,
     success: null,
@@ -117,6 +117,7 @@ const authSlice = createSlice({
         builder.addCase(SignupUser.fulfilled, (state, action) => {            
             state.loading = false;
             state.success = true;
+            state.user = action.payload;
             state.message = action.payload.message;
         })
         builder.addCase(SignupUser.rejected, (state, action) => {
@@ -129,9 +130,10 @@ const authSlice = createSlice({
             state.success = null;
 
         })
-        builder.addCase(LoginUser.fulfilled, (state, action) => {
+        builder.addCase(LoginUser.fulfilled, (state, action) => {            
             state.loading = false;
             state.success = true;
+            state.user = action.payload;
             state.message = action.payload.message;
             state.name = action.payload.name;
             state.token = action.payload.jwtToken;
@@ -153,6 +155,7 @@ const authSlice = createSlice({
         builder.addCase(LogoutUser.fulfilled, (state, action) => {
             state.loading = false;
             state.success = true;
+            state.user = action.payload;
             state.message = action.payload.message;
             state.name = action.payload.name;
             state.token = action.payload.jwtToken;

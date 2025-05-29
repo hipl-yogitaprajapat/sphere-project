@@ -1,0 +1,57 @@
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import * as services from '../../request/task'
+
+const initialState = {
+    message: "",
+    loading: false,
+    error: null,
+    success: null,
+    token: null,
+    task:[]
+}
+
+
+export const createNewTask = createAsyncThunk('newTask', async (formData,{ rejectWithValue }) => {
+      try {
+    const response = await services.addnewtask(formData);
+       return response  
+      
+  } catch (error) {
+    const message = error.response?.data?.message || "New Task failed";
+      return rejectWithValue(message);
+  }
+});
+
+const taskSlice = createSlice({
+    name: "task",
+    initialState,
+    reducers: {
+        clearMessages: (state) => {
+            state.error = null;
+            state.success = null;
+            state.message = "";
+            return state
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(createNewTask.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(createNewTask.fulfilled, (state, action) => {            
+            state.loading = false;
+            state.success = true;
+            state.task = action.payload;
+            state.message = action.payload.message;
+        })
+        builder.addCase(createNewTask.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
+        })
+    }
+})
+export const { clearMessages } = taskSlice.actions;
+export default taskSlice.reducer;
