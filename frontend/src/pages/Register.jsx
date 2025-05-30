@@ -5,7 +5,8 @@ import GoogleComponent from './GoogleComponent';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils/Error';
 import { useNavigate } from 'react-router-dom';
-import { SignupUser } from '../components/redux/slice/authSlice';
+import { SignupUser } from '../redux/slice/authSlice';
+// import { SignupUser } from '../components/redux/slice/authSlice';
 
 const Register = () => {
   const [registerInfo, setregisterInfo] = useState({

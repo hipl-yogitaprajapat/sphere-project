@@ -15,3 +15,19 @@ export const viewuserbyrole = async (designation) => {
     });
     return response.data; 
 };
+
+
+export const viewtask = async () => {
+    const response = await axios.get(`${API_BASE_URL}task/tasks`, {
+        withCredentials: true,
+    });
+    return response.data; 
+    
+};
+
+export const deletetask = async ({id}) => { 
+    const response = await axios.delete(`${API_BASE_URL}task/delete-task/${id}`, {
+        withCredentials: true,
+    });
+    return response.data;    
+};

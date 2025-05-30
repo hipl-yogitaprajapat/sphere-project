@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { ResetPasswordUser } from '../components/redux/slice/authSlice';
+// import { ResetPasswordUser } from '../components/redux/slice/authSlice';
 import { handleError, handleSuccess } from '../utils/Error';
+import { ResetPasswordUser } from '../redux/slice/authSlice';
 
 const ChangePassword = () => {
   const { id, token } = useParams();

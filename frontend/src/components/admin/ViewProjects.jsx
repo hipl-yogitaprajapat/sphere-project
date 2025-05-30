@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteProject, viewProjects } from '../redux/slice/addUsersAdmin';
+// import { deleteProject, viewProjects } from '../redux/slice/addUsersAdmin';
 import { useNavigate } from 'react-router-dom';
 import { handleError, handleSuccess } from '../../utils/Error';
+import { deleteProject, viewProjects } from '../../redux/slice/addUsersAdmin';
 
 const ViewProjects = () => {  
     const dispatch = useDispatch()

@@ -1,7 +1,7 @@
 import { useGoogleLogin } from '@react-oauth/google'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { googleAuth } from '../components/redux/slice/authSlice';
+import { googleAuth } from '../redux/slice/authSlice';
 import { handleError, handleSuccess } from '../utils/Error';
 
 

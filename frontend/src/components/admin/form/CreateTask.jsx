@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { createNewTask, viewUsersByRole } from '../../redux/slice/taskSlice';
+// import { createNewTask, viewUsersByRole } from '../../redux/slice/taskSlice';
+import {createNewTask,viewUsersByRole} from "../../../redux/slice/taskSlice"
 import { handleError, handleSuccess } from '../../../utils/Error';
 import Select from "react-select"
 
@@ -23,7 +24,6 @@ const CreateTask = () => {
 
     const [filteredUsers, setFilteredUsers] = useState([]);
     const { projects } = useSelector((state) => state.admin);
-    console.log(filteredUsers, "filteredUsers");
 
     // Watch for designation changes and fetch users
     useEffect(() => {

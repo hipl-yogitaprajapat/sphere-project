@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import GoogleComponent from './GoogleComponent';
 import { handleError, handleSuccess } from '../utils/Error';
-import { LoginUser } from '../components/redux/slice/authSlice';
+import { LoginUser } from '../redux/slice/authSlice';
 import { useDispatch } from 'react-redux';
 
 

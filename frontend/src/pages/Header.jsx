@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { handleError, handleSuccess } from '../utils/Error';
-import { LogoutUser } from '../components/redux/slice/authSlice';
+import { LogoutUser } from '../redux/slice/authSlice';
 import { ToastContainer } from 'react-toastify';
 import { useSidebar } from '../components/contextapi/SidebarContext';
 

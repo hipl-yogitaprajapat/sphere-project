@@ -41,3 +41,37 @@ export const createTask = async(req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+export const getAllTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find()
+      .populate('project', 'projectname') // Populate project name 
+      .populate('assignedTo', 'firstName lastName') // Populate firstName, firstName
+      .sort({ createdAt: -1 }); // Sort by most recent first (optional)
+
+    res.status(200).json({ tasks });
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    await Task.findByIdAndDelete(id);
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
