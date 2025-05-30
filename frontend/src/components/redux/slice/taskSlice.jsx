@@ -23,6 +23,16 @@ export const createNewTask = createAsyncThunk('newTask', async (formData,{ rejec
   }
 });
 
+export const viewUsersByRole = createAsyncThunk('viewuserbyrole', async (designation,{ rejectWithValue }) => {
+      try {
+    const response = await services.viewuserbyrole(designation);
+       return response 
+  } catch (error) {
+    const message = error.response?.data?.message || "Users view by role failed";
+      return rejectWithValue(message);
+  }
+});
+
 const taskSlice = createSlice({
     name: "task",
     initialState,
@@ -51,6 +61,22 @@ const taskSlice = createSlice({
             state.loading = true
             state.error = action.payload;
         })
+                builder.addCase(viewUsersByRole.pending, (state) => {
+                            state.loading = true;
+                            state.error = null;
+                            state.success = null;
+                
+                })
+                builder.addCase(viewUsersByRole.fulfilled, (state, action) => {   
+                            state.loading = false;
+                            state.success = true;
+                            state.task = action.payload.data;
+                            state.message = action.payload.message;
+                })
+                builder.addCase(viewUsersByRole.rejected, (state, action) => {
+                            state.loading = false
+                            state.error = action.payload;
+                })
     }
 })
 export const { clearMessages } = taskSlice.actions;

@@ -7,7 +7,7 @@ export const createTask = async(req, res) => {
   try {
     const {name,description,project,designation,assignedTo,priority,status,dueDate} = req.body;
 
-    if (!name || !project || !designation || !assignedTo || assignedTo.length === 0) {
+    if (!name || !project || !designation ||!status|| !assignedTo || assignedTo.length === 0) {
       return res.status(400).json({ message: "Required fields missing" });
     }
 

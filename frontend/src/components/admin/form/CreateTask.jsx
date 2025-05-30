@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { createNewTask } from '../../redux/slice/taskSlice';
+import { createNewTask, viewUsersByRole } from '../../redux/slice/taskSlice';
 import { handleError, handleSuccess } from '../../../utils/Error';
+import Select from "react-select"
 
 const CreateTask = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [formData, setFormData] = useState({
+    const [taskInfo, setTaskInfo] = useState({
         taskname: '',
         projects: '',
         description: '',
@@ -20,20 +21,62 @@ const CreateTask = () => {
         attachments: null,
     });
 
-    console.log(formData, "formData");
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const { projects } = useSelector((state) => state.admin);
-    console.log(projects,"projects");
-    
+    console.log(filteredUsers, "filteredUsers");
+
+    // Watch for designation changes and fetch users
+    useEffect(() => {
+        const fetchUsersByDesignation = async () => {
+            const designation = taskInfo.designation;
+            if (designation) {
+                try {
+                    const res = await dispatch(viewUsersByRole(designation)).unwrap();
+                    setFilteredUsers(res);
+                } catch (err) {
+                    handleError(err);
+                    setFilteredUsers([]);
+                }
+            } else {
+                setFilteredUsers([]);
+            }
+        };
+
+        fetchUsersByDesignation();
+    }, [taskInfo.designation, dispatch]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', taskInfo.taskname);
+        formData.append('project', taskInfo.projects);
+        formData.append('description', taskInfo.description);
+        formData.append('priority', taskInfo.priority);
+        formData.append('status', taskInfo.status);
+        formData.append('designation', taskInfo.designation);
+        formData.append('dueDate', taskInfo.dueDate);
+
+        taskInfo.assignedTo.forEach(userId => {
+            formData.append('assignedTo', userId);
+        });
+
+        if (taskInfo.attachments) {
+            formData.append('attachments', taskInfo.attachments);
+        }
         try {
             const response = await dispatch(createNewTask(formData)).unwrap();
             handleSuccess(response.message);
+            navigate('/admin');
         } catch (err) {
             handleError(err);
         }
     };
+    const userOptions = filteredUsers.map((user) => ({
+        value: user._id,
+        label: `${user.firstName} ${user.lastName}`,
+    }));
 
     return (
         <div className="container mt-3">
@@ -42,15 +85,14 @@ const CreateTask = () => {
                 <div className="row mb-3">
                     <div className="col-md-6">
                         <label className="form-label">Task Name</label>
-                        <input type="text" class="form-control" name="name" value={formData.taskname} onChange={(e) => setFormData({ ...formData, taskname: e.target.value })} placeholder="Task Name" />
-
+                        <input type="text" className="form-control" name='name' value={taskInfo.taskname} onChange={(e) => setTaskInfo({ ...taskInfo, taskname: e.target.value })} placeholder="Task Name" />
                     </div>
                     <div className="col-md-6">
-                        <label class="form-label">Designation</label>
+                        <label className="form-label">Designation</label>
                         <select
                             className="form-control"
-                            value={formData.designation}
-                            onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                            value={taskInfo.designation}
+                            onChange={(e) => setTaskInfo({ ...taskInfo, designation: e.target.value, assignedTo: '' })}
                             required
                         >
                             <option>-- Select Designation --</option>
@@ -58,26 +100,27 @@ const CreateTask = () => {
                             <option value="tester">Tester</option>
                             <option value="designer">Designer</option>
                         </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label className="form-label">Project</label>
-                        <select name="designation" className="form-select" value={formData.projects} onChange={(e) => setFormData({ ...formData, projects: e.target.value })} required>
-                            <option value="">Select Project</option>
-                            {projects.map((project,index) => (
-                                // console.log(project,"proj")
-                                // console.log(_id,"_id")
-                                <option key={index} value={project._id}>{project.projectname}</option>
-                            ))}
-                        </select>
+                    </div>             
+                      <div className="mt-3">
+                        <label className="form-label">Assign To</label>
+                        <Select
+                            isMulti
+                            name="assignedTo"
+                            options={userOptions}
+                            value={userOptions.filter(option => taskInfo.assignedTo.includes(option.value))}
+                            onChange={(selectedOptions) =>
+                                setTaskInfo({ ...taskInfo, assignedTo: selectedOptions.map(option => option.value) })
+                            }
+                        />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <div className="col-md-4">
-                        <label class="form-label">Priority</label>
+                        <label className="form-label">Priority</label>
                         <select
                             className="form-control"
-                            value={formData.priority}
-                            onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                            value={taskInfo.priority}
+                            onChange={(e) => setTaskInfo({ ...taskInfo, priority: e.target.value })}
                             required
                         >
                             <option>-- Select Priority --</option>
@@ -90,25 +133,28 @@ const CreateTask = () => {
                         <label className="form-label">Status</label>
                         <select
                             className="form-control"
-                            value={formData.status}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            value={taskInfo.status}
+                            onChange={(e) => setTaskInfo({ ...taskInfo, status: e.target.value })}
                             required
                         >
                             <option>-- Select Status --</option>
-                            <option value="active">Active</option>
-                            <option value="hold">Hold</option>
-                            <option value="complete">Complete</option>
+                            <option value="pending">Pending</option>
+                            <option value="in progress">In process</option>
+                            <option value="completed">Completed</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label className="form-label">Assign To</label>
-                        <select name="assign" className="form-select" value={formData.assignedTo} onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })} required>
-                            <option value="">--Assign to--</option>
+                     <div className="col-md-4">
+                        <label className="form-label">Project</label>
+                        <select className="form-select" value={taskInfo.projects} onChange={(e) => setTaskInfo({ ...taskInfo, projects: e.target.value })}>
+                            <option value="">Select Project</option>
                             {projects.map((project, index) => (
-                                <option key={index} value={project}>{project.projectname}</option>
+                                <option key={index} value={project._id}>
+                                    {project.projectname}
+                                </option>
                             ))}
                         </select>
                     </div>
+
                 </div>
                 <div className="row mb-3">
                     <div className="col-md-6">
@@ -117,8 +163,8 @@ const CreateTask = () => {
                             type="date"
                             name="dueDate"
                             className="form-control"
-                            value={formData.dueDate}
-                            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                            value={taskInfo.dueDate}
+                            onChange={(e) => setTaskInfo({ ...taskInfo, dueDate: e.target.value })}
                             required
                         />
                     </div>
@@ -130,14 +176,16 @@ const CreateTask = () => {
                             className="form-control"
                             onChange={(e) => {
                                 const file = e.target.files[0];
-                                setFormData({ ...formData, attachments: file });
+                                if (file) {
+                                    setTaskInfo({ ...taskInfo, attachments: file });
+                                }
                             }}
                         />
                     </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea type="text" class="form-control" name="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Description" />
+                <div className="form-group mb-3">
+                    <label className="form-label">Description</label>
+                    <textarea className="form-control" value={taskInfo.description} onChange={(e) => setTaskInfo({ ...taskInfo, description: e.target.value })} placeholder="Description" />
                 </div>
                 <button type="submit" className="btn btn-success mt-3">Create Task</button>
             </form>
