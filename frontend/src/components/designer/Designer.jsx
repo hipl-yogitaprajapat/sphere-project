@@ -1,7 +1,12 @@
+import Header from "../../pages/Header"
+import Sidebar from "../../pages/Siderbar"
 
 const Designer = () => {
   return (
-    <div>Designer</div>
+    <>
+    <Sidebar/>
+    <Header/>
+    </>
   )
 }
 

@@ -14,11 +14,11 @@ const taskSchema = new mongoose.Schema({
         required: true,
     },
     designation: {
-    type: String,
-    enum: ['developer', 'tester', 'designer'],
-    required: true,
+        type: String,
+        enum: ['developer', 'tester', 'designer'],
+        required: true,
     },
-    assignedTo: [{type: mongoose.Schema.Types.ObjectId,ref: "User"}],
+    assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     priority: {
         type: String,
         enum: ["high", "medium", "low"],
@@ -35,6 +35,11 @@ const taskSchema = new mongoose.Schema({
     attachments: {
         type: String,
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    }
 }, { timestamps: true });
 
 const Task = mongoose.model("Task", taskSchema);

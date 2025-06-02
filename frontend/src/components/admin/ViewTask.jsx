@@ -7,21 +7,22 @@ import { handleError, handleSuccess } from '../../utils/Error';
 const ViewTask = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { task } = useSelector((state) => state.tasks);  
-
+  const { task } = useSelector((state) => state.tasks);
+  
+  const IMAGE_BASE_URL = import.meta.env.VITE_APP_IMAGE_URL;
   useEffect(() => {
     dispatch(viewTaskDetails());
   }, [dispatch]);
 
-       const handleDelete = async (id) => {        
-            try {
-              const response = await dispatch(deleteTask({id})).unwrap();          
-              handleSuccess(response.message);
-              setTimeout(() => navigate("/admin"), 1000);
-            } catch (err) {
-              handleError(err);
-            }
-        }
+  const handleDelete = async (id) => {
+    try {
+      const response = await dispatch(deleteTask({ id })).unwrap();
+      handleSuccess(response.message);
+      setTimeout(() => navigate("/admin"), 1000);
+    } catch (err) {
+      handleError(err);
+    }
+  }
 
   return (
     <div className="container mt-4">
@@ -46,15 +47,12 @@ const ViewTask = () => {
               <th style={{ width: '10%' }}>Due Date</th>
               <th style={{ width: '15%' }}>Description</th>
               <th style={{ width: '12%' }}>Images</th>
+              <th style={{ width: '5%' }}>created By</th>
               <th style={{ width: '10%' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {task.length === 0 ? (
-              <tr>
-                <td colSpan="11" className="text-center">No tasks found</td>
-              </tr>
-            ) : (
+            {Array.isArray(task) && task.length > 0 ?  (
               task.map((task, index) => (
                 <tr key={task._id} className="text-center">
                   <td>{index + 1}</td>
@@ -103,14 +101,32 @@ const ViewTask = () => {
                     {task.description || 'N/A'}
                   </td>
                   <td className="text-center">
-                    {task.attachments}
+                    {task.attachments ? (
+                      <button
+                        className="btn btn-sm btn-outline-info"
+                        onClick={() =>
+                          window.open(`${IMAGE_BASE_URL}/uploads/${task.attachments}`, '_blank')
+                        }
+                      >
+                        View Image
+                      </button>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                   <td className="text-start" style={{ whiteSpace: 'normal' }}>
+                    {task.createdBy ? `${task.createdBy.firstName} ${task.createdBy.lastName}` : 'N/A'}
                   </td>
                   <td>
-                    <button onClick={() => navigate(`/edit-task/${task._id}`)} className="btn btn-sm btn-warning me-2">Edit</button>
-                    <button onClick={()=>handleDelete(task._id)}  className="btn btn-sm btn-danger">Delete</button>
+                    <button onClick={() => navigate(`/update-task/${task._id}`)} className="btn btn-sm btn-warning me-2">Edit</button>
+                    <button onClick={() => handleDelete(task._id)} className="btn btn-sm btn-danger">Delete</button>
                   </td>
                 </tr>
               ))
+            ):(
+              <tr>
+                <td colSpan="11" className="text-center">No tasks found</td>
+              </tr>
             )}
           </tbody>
         </table>

@@ -17,6 +17,7 @@ const ViewProjects = lazy(() => import('../components/admin/ViewProjects'));
 const EditProject = lazy(() => import('../components/admin/form/EditProject'));
 const CreateTask = lazy(() => import('../components/admin/form/CreateTask'));
 const ViewTask = lazy(() => import('../components/admin/ViewTask'));
+const UpdateTask = lazy(() => import('../components/admin/form/UpdateTask'));
 
 
 const MainRoutes = [
@@ -38,7 +39,7 @@ const MainRoutes = [
   { path: '/edit-project/:id', Component: EditProject, protected: true },
   { path: '/create-task', Component: CreateTask, protected: true },
   { path: '/view-task', Component: ViewTask, protected: true },
-
+  { path: '/update-task/:id', Component: UpdateTask, protected: true },
 
 ];
 

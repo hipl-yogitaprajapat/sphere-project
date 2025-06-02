@@ -63,7 +63,11 @@ const Sidebar = () => {
                       <span class="pc-mtext">View Projects</span>
                     </Link>
                   </li>
-                      <li class="pc-item pc-caption">
+                </>
+              )}
+              {(role === "admin" || role === "developer") && (
+                <>          
+                    <li class="pc-item pc-caption">
                     <label>Task Management</label>
                     <i class="ti ti-dashboard"></i>
                   </li>

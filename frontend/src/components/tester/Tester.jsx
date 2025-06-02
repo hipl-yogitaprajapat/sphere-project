@@ -1,8 +1,11 @@
+import Header from "../../pages/Header"
+import Sidebar from "../../pages/Siderbar"
 
 const Tester = () => {
     return (
         <>
-            <div> hello Tester</div>
+          <Sidebar/>
+          <Header/>
         </>
     )
 }

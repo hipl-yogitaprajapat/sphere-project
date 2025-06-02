@@ -2,6 +2,8 @@ import { validateImage } from "../lib/imageValidator.js";
 import Project from "../models/newproject.js";
 import Task from "../models/task.model.js";
 import User from "../models/user.model.js";
+import fs from "fs";
+import path from "path";
 
 export const createTask = async(req, res) => {
   try {
@@ -33,6 +35,7 @@ export const createTask = async(req, res) => {
       status,
       dueDate,
       attachments: filename,
+      createdBy: req.user._id, 
     });
     await task.save();
     res.status(201).json({ message: "Task created successfully", task });
@@ -45,9 +48,20 @@ export const createTask = async(req, res) => {
 
 export const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find()
+    let query = {};
+
+    if (req.user.role === "developer") {
+      query = {
+        $or: [
+          { createdBy: req.user._id },
+          { assignedTo: req.user._id }
+        ]
+      };
+    }
+    const tasks = await Task.find(query)
       .populate('project', 'projectname') // Populate project name 
       .populate('assignedTo', 'firstName lastName') // Populate firstName, firstName
+      .populate('createdBy', 'firstName lastName')
       .sort({ createdAt: -1 }); // Sort by most recent first (optional)
 
     res.status(200).json({ tasks });
@@ -56,6 +70,57 @@ export const getAllTasks = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {name,description,project,designation,assignedTo,priority,status,dueDate} = req.body;
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const projectExists = await Project.findById(project);
+    if (!projectExists) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const users = await User.find({ _id: { $in: assignedTo } });
+    const mismatchedUsers = users.filter(user => user.role !== designation);
+    if (mismatchedUsers.length > 0) {
+      return res.status(400).json({ message: "Assigned users do not match the selected designation" });
+    }
+
+    // Handle new file upload (optional)
+    let filename = task.attachments; // keep old file by default
+    if (req.file) {
+      // Delete old image file
+      if (task.attachments) {
+        const oldPath = path.join("uploads", task.attachments);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+      filename = validateImage(req.file);
+    }    
+
+    task.name = name;
+    task.description = description;
+    task.project = project;
+    task.designation = designation;
+    task.assignedTo = assignedTo;
+    task.priority = priority;
+    task.status = status;
+    task.dueDate = dueDate;
+    task.attachments = filename;
+
+    await task.save();
+    res.status(200).json({ message: "Task updated successfully", task });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 
 export const deleteTask = async (req, res) => {
   try {

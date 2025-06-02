@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-// import { createNewTask, viewUsersByRole } from '../../redux/slice/taskSlice';
-import { createNewTask, viewUsersByRole } from "../../../redux/slice/taskSlice"
+import { useNavigate, useParams } from 'react-router-dom';
 import { handleError, handleSuccess } from '../../../utils/Error';
 import Select from "react-select"
-import { viewProjects } from '../../../redux/slice/addUsersAdmin';
+import { updateTask, viewTaskDetails, viewUsersByRole } from '../../../redux/slice/taskSlice';
 
-const CreateTask = () => {
+const UpadteTask = () => {
+    const { id } = useParams();
+    console.log(id, "paramsid");
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [taskInfo, setTaskInfo] = useState({
         taskname: '',
         projects: '',
@@ -23,16 +24,33 @@ const CreateTask = () => {
         attachments: null,
     });
 
-    const [filteredUsers, setFilteredUsers] = useState([]);
     const { projects } = useSelector((state) => state.admin);
+    const { task } = useSelector((state) => state.tasks);
 
     useEffect(() => {
-        if (!projects || projects.length === 0) {
-            dispatch(viewProjects());
-        }
-    }, [dispatch, projects]);
+        dispatch(viewTaskDetails());
+    }, [dispatch]);
 
-    // Watch for designation changes and fetch users
+    useEffect(() => {
+        if (Array.isArray(task)) {
+            const taskToEdit = task.find(t => t?._id === id);
+            if (taskToEdit) {
+                setTaskInfo({
+                    taskname: taskToEdit.name || '',
+                    projects: taskToEdit.project?._id || '',
+                    description: taskToEdit.description || '',
+                    priority: taskToEdit.priority || '',
+                    status: taskToEdit.status || '',
+                    designation: taskToEdit.designation || '',
+                    assignedTo: taskToEdit.assignedTo.map(user => user._id) || [],
+                    dueDate: taskToEdit.dueDate?.slice(0, 10) || '',
+                    attachments: taskToEdit.attachments || '',
+                });
+            }
+        }
+    }, [task, id]);
+
+
     useEffect(() => {
         const fetchUsersByDesignation = async () => {
             const designation = taskInfo.designation;
@@ -48,14 +66,11 @@ const CreateTask = () => {
                 setFilteredUsers([]);
             }
         };
-
         fetchUsersByDesignation();
     }, [taskInfo.designation, dispatch]);
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const formData = new FormData();
         formData.append('name', taskInfo.taskname);
         formData.append('project', taskInfo.projects);
@@ -73,7 +88,9 @@ const CreateTask = () => {
             formData.append('attachments', taskInfo.attachments);
         }
         try {
-            const response = await dispatch(createNewTask(formData)).unwrap();
+            const response = await dispatch(updateTask({id, formData})).unwrap();
+            console.log(response, "responseeee");
+
             handleSuccess(response.message);
             navigate('/admin');
         } catch (err) {
@@ -99,7 +116,7 @@ const CreateTask = () => {
                         <select
                             className="form-control"
                             value={taskInfo.designation}
-                            onChange={(e) => setTaskInfo({ ...taskInfo, designation: e.target.value, assignedTo: '' })}
+                            onChange={(e) => setTaskInfo({ ...taskInfo, designation: e.target.value, assignedTo: [] })}
                             required
                         >
                             <option>-- Select Designation --</option>
@@ -161,6 +178,7 @@ const CreateTask = () => {
                             ))}
                         </select>
                     </div>
+
                 </div>
                 <div className="row mb-3">
                     <div className="col-md-6">
@@ -187,16 +205,17 @@ const CreateTask = () => {
                                 }
                             }}
                         />
+                        {/* {taskInfo.attachments} */}
                     </div>
                 </div>
                 <div className="form-group mb-3">
                     <label className="form-label">Description</label>
                     <textarea className="form-control" value={taskInfo.description} onChange={(e) => setTaskInfo({ ...taskInfo, description: e.target.value })} placeholder="Description" />
                 </div>
-                <button type="submit" className="btn btn-success mt-3">Create Task</button>
+                <button type="submit" className="btn btn-success mt-3">Update Task</button>
             </form>
         </div>
     );
 };
 
-export default CreateTask;
+export default UpadteTask;

@@ -64,7 +64,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
         const user = await User.findOne({ email });
-        console.log(user, "user");
+        // console.log(user, "user");
 
         if (!user) {
             res.status(400).json({ message: "Invaild Credentials", success: false })

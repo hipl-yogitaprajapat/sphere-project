@@ -22,7 +22,13 @@ export const viewtask = async () => {
         withCredentials: true,
     });
     return response.data; 
-    
+};
+
+export const updatetask = async ({id,formData}) => { 
+    const response = await axios.put(`${API_BASE_URL}task/update/${id}`,formData, {
+        withCredentials: true,
+    });
+    return response.data; 
 };
 
 export const deletetask = async ({id}) => { 
