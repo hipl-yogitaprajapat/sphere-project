@@ -69,6 +69,17 @@ export const deleteTask = createAsyncThunk('deletetask', async ({ id }, { reject
     }
 });
 
+export const updateTaskStatus = createAsyncThunk('updatetaskstatus', async ({ id,taskstatusInfo }, { rejectWithValue }) => {
+    try {
+        const response = await services.updatetaskstatus({ id ,taskstatusInfo});
+        return response
+
+    } catch (error) {
+        const message = error.response?.data?.message || "Edit User Projects failed";
+        return rejectWithValue(message);
+    }
+});
+
 
 const taskSlice = createSlice({
     name: "task",
@@ -142,6 +153,21 @@ const taskSlice = createSlice({
             state.message = action.payload.message;
         })
         builder.addCase(updateTask.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
+        })
+        builder.addCase(updateTaskStatus.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(updateTaskStatus.fulfilled, (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.message = action.payload.message;
+        })
+        builder.addCase(updateTaskStatus.rejected, (state, action) => {
             state.loading = true
             state.error = action.payload;
         })

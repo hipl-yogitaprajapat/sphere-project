@@ -45,24 +45,24 @@ export const createTask = async(req, res) => {
   }
 };
 
-
 export const getAllTasks = async (req, res) => {
   try {
     let query = {};
 
-    if (req.user.role === "developer") {
-      query = {
-        $or: [
-          { createdBy: req.user._id },
-          { assignedTo: req.user._id }
-        ]
-      };
+    switch (req.user.role) {
+      case "developer":
+      case "designer":
+      case "tester":
+        // See only tasks assigned to you
+        query = { assignedTo: req.user._id };
+        break;
     }
+
     const tasks = await Task.find(query)
-      .populate('project', 'projectname') // Populate project name 
-      .populate('assignedTo', 'firstName lastName') // Populate firstName, firstName
-      .populate('createdBy', 'firstName lastName')
-      .sort({ createdAt: -1 }); // Sort by most recent first (optional)
+      .populate("project",   "projectname")
+      .populate("assignedTo","firstName lastName role")
+      .populate("createdBy", "firstName lastName role")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({ tasks });
   } catch (error) {
@@ -139,4 +139,29 @@ export const deleteTask = async (req, res) => {
   }
 };
 
+export const updateTaskStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found", success: false });
+    }
+
+    const isAssigned = task.assignedTo.some(userId => userId.toString() === req.user._id.toString());
+
+    if (!isAssigned) {
+      return res.status(403).json({ message: "You are not allowed to update this task",success: false});
+    }
+
+    task.status = status;
+    await task.save();
+
+    res.status(200).json({ message: "Status updated successfully", task ,success: true});
+  } catch (error) {
+    console.error("Error updating status:", error);
+    res.status(500).json({ message: "Server error", error: error.message ,success: false });
+  }
+};
 

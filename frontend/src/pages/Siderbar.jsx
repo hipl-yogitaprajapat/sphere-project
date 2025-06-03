@@ -51,13 +51,13 @@ const Sidebar = () => {
                     <label>Project Management</label>
                     <i class="ti ti-dashboard"></i>
                   </li>
-                    <li class="pc-item">
+                  <li class="pc-item">
                     <Link to="/create-project" class="pc-link">
                       <span class="pc-micon"><i class="ti ti-typography"></i></span>
                       <span class="pc-mtext"> New Project</span>
                     </Link>
                   </li>
-                    <li class="pc-item">
+                  <li class="pc-item">
                     <Link to="/view-projects" class="pc-link">
                       <span class="pc-micon"><i class="ti ti-typography"></i></span>
                       <span class="pc-mtext">View Projects</span>
@@ -65,25 +65,27 @@ const Sidebar = () => {
                   </li>
                 </>
               )}
-              {(role === "admin" || role === "developer") && (
-                <>          
-                    <li class="pc-item pc-caption">
+              {(role === "admin") && (
+                <>
+                  <li class="pc-item pc-caption">
                     <label>Task Management</label>
                     <i class="ti ti-dashboard"></i>
                   </li>
-                    <li class="pc-item">
+                  <li class="pc-item">
                     <Link to="/create-task" class="pc-link">
                       <span class="pc-micon"><i class="ti ti-typography"></i></span>
                       <span class="pc-mtext"> New Task</span>
                     </Link>
                   </li>
-                    <li class="pc-item">
-                    <Link to="/view-task" class="pc-link">
-                      <span class="pc-micon"><i class="ti ti-typography"></i></span>
-                      <span class="pc-mtext">View Task</span>
-                    </Link>
-                  </li>
                 </>
+              )}
+              {(role === "admin" || role === "developer" || role === "tester" || role === "designer") && (
+                <li class="pc-item">
+                  <Link to="/view-task" class="pc-link">
+                    <span class="pc-micon"><i class="ti ti-typography"></i></span>
+                    <span class="pc-mtext">View Task</span>
+                  </Link>
+                </li>
               )}
             </ul>
           </div>

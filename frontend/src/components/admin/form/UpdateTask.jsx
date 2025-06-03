@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { handleError, handleSuccess } from '../../../utils/Error';
 import Select from "react-select"
 import { updateTask, viewTaskDetails, viewUsersByRole } from '../../../redux/slice/taskSlice';
+import { RedirectPath } from '../../../utils/RedirectPath';
 
 const UpadteTask = () => {
     const { id } = useParams();
@@ -26,7 +27,7 @@ const UpadteTask = () => {
 
     const { projects } = useSelector((state) => state.admin);
     const { task } = useSelector((state) => state.tasks);
-
+    const userRole = (localStorage.getItem("role"));
     useEffect(() => {
         dispatch(viewTaskDetails());
     }, [dispatch]);
@@ -50,7 +51,6 @@ const UpadteTask = () => {
         }
     }, [task, id]);
 
-
     useEffect(() => {
         const fetchUsersByDesignation = async () => {
             const designation = taskInfo.designation;
@@ -71,6 +71,7 @@ const UpadteTask = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const formData = new FormData();
         formData.append('name', taskInfo.taskname);
         formData.append('project', taskInfo.projects);
@@ -89,10 +90,8 @@ const UpadteTask = () => {
         }
         try {
             const response = await dispatch(updateTask({id, formData})).unwrap();
-            console.log(response, "responseeee");
-
             handleSuccess(response.message);
-            navigate('/admin');
+            navigate(RedirectPath(userRole));
         } catch (err) {
             handleError(err);
         }
@@ -104,7 +103,7 @@ const UpadteTask = () => {
 
     return (
         <div className="container mt-3">
-            <h4>Create New Task</h4>
+            <h4>Update New Task</h4>
             <form onSubmit={handleSubmit}>
                 <div className="row mb-3">
                     <div className="col-md-6">

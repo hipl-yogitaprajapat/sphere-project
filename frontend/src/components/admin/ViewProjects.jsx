@@ -55,12 +55,12 @@ const ViewProjects = () => {
                                     <td style={{ width: '20%' }}>{proj.projectname}</td>
                                     <td style={{ width: '30%' }}>{proj.description}</td>
                                     <td style={{ width: '15%' }}>
-                                        <span className={`badge bg-${proj.priority === 'High' ? 'danger' : proj.priority === 'Medium' ? 'warning' : 'secondary'}`}>
+                                        <span className={`badge bg-${proj.priority === 'high' ? 'danger' : proj.priority === 'medium' ? 'warning' : 'secondary'}`}>
                                             {proj.priority}
                                         </span>
                                     </td>
                                     <td style={{ width: '15%' }}>
-                                        <span className={`badge bg-${proj.status === 'Active' ? 'success' : proj.status === 'Completed' ? 'primary' : 'info'}`}>
+                                        <span className={`badge bg-${proj.status === 'active' ? 'success' : proj.status === 'completed' ? 'primary' : 'info'}`}>
                                             {proj.status}
                                         </span>
                                     </td>

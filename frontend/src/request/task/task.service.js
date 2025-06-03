@@ -37,3 +37,10 @@ export const deletetask = async ({id}) => {
     });
     return response.data;    
 };
+
+export const updatetaskstatus = async ({id,taskstatusInfo}) => { 
+    const response = await axios.patch(`${API_BASE_URL}task/update-status/${id}`,taskstatusInfo, {
+        withCredentials: true,
+    });
+    return response.data; 
+};
