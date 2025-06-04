@@ -55,6 +55,7 @@ const ViewTask = () => {
                   <th>Created By</th>
                 </>
               )}
+              <th>Comments</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -126,6 +127,11 @@ const ViewTask = () => {
                     </>
                   )}
                   <td>
+                    <button onClick={() => navigate(`/comments/${taskItem._id}`)} className="btn btn-sm btn-info">
+                       Comments
+                    </button>
+                  </td>
+                  <td>
                     {role === "admin" ? (
                       <>
                         <button onClick={() => navigate(`/update-task/${taskItem._id}`)} className="btn btn-sm btn-warning me-2">
@@ -137,7 +143,7 @@ const ViewTask = () => {
                       </>
                     ) : (
                       <button
-                        onClick={() => 
+                        onClick={() =>
                           navigate(`/update-status/${taskItem._id}`)
                         }
                         className="btn btn-sm btn-primary"

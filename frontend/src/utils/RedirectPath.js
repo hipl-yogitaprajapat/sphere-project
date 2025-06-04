@@ -1,5 +1,4 @@
 export const RedirectPath = (role) => {
-    console.log(role,"role22");
     
     switch (role) {
         case "admin": return "/admin";
