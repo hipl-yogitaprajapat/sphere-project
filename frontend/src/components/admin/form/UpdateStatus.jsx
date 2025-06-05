@@ -64,23 +64,6 @@ const UpadteStatus = () => {
               <option value="completed">Completed</option>
             </select>
           </div>           
-          <div className="mb-3">
-            <label htmlFor="comment" className="form-label fw-bold">Add Comment</label>
-            <textarea
-              id="comment"
-              className="form-control"
-              rows="4"
-              placeholder="Enter your comment..."
-              value={taskstatusInfo.comment}
-              onChange={(e) =>
-                setTaskStatusInfo({
-                  ...taskstatusInfo,
-                  comment: e.target.value
-                })
-              }
-            >    
-            </textarea>
-          </div>
           <div className="d-flex gap-2 mt-4">
             <button type="submit" className="btn btn-success">
               Update Status

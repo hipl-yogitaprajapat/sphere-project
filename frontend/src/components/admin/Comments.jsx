@@ -1,86 +1,65 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Comment from "./Comment";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { viewTaskDetails } from "../../redux/slice/taskSlice";
+import { addReplyComment, createNewComment, fetchComments } from "../../redux/slice/commentSlice";
+import { handleError, handleSuccess } from "../../utils/Error";
 
 const Comments = () => {
-  const [input, setInput] = useState('')
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      display: "hey yogita",
-      children: [
-        {
-          id: 2,
-          display: "how are you",
-          children: [
-            {
-              id: 3,
-              display: "fine",
-              children: []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 4,
-      display: "Awesome",
-      children: []
-    }
-  ])
+  const { id } = useParams();
+  const [input, setInput] = useState('');
+  const { task } = useSelector((state) => state.tasks);
+  const taskData = task.find((t) => t._id === id);
+  const { comments = [] } = useSelector((state) => state.comment);
 
+  const dispatch = useDispatch();
 
-  const handleChange = (e) => {
-    console.log(e.target.value);
-    setInput(e.target.value)
-  }
+  useEffect(() => {
+    dispatch(viewTaskDetails());
+    dispatch(fetchComments({ id }));
+  }, [dispatch, id]);
 
-  const newComment = (text) => {
-    return {
-      id: new Date().getTime(),
-      display: text,
-      children: []
+  const handleNewComment = async () => {
+    try {
+      const taskId = id;
+      const text = input;
+      const response = await dispatch(createNewComment({ taskId, text })).unwrap();
+      handleSuccess(response.message);
+      setInput("");
+    } catch (error) {
+      handleError(error);
     }
   }
 
-  const handleNewComment = () => {
-    setComments([...comments, newComment(input)])
-    setInput("");
-  }
-
-  const addReply=(parentId,text)=>{
-    // console.log("---parent---",parentId,text);
-    const copyComment = [...comments];
-    addComments(copyComment,parentId,text)
-    setComments(copyComment)
-  }
-
-  const addComments=(comments,parentId,text)=>{
-    for(let i=0;i<comments.length;i++){
-      let comment = comments[i];      
-      if(comment.id === parentId){
-        // console.log("----Found First Level----",parentId,text);
-        comment.children.unshift(newComment(text));
-      }
+  const addReply = async (parentId, text) => {
+    try {
+      const taskId = id;
+      const response = await dispatch(addReplyComment({ taskId, text, parentId })).unwrap();
+      handleSuccess(response.message);
+       await dispatch(fetchComments({ id }));
+    } catch (error) {
+      handleError(error);
     }
-
-    for(let i=0;i<comments.length;i++){
-      let comment = comments[i]
-        // console.log("----Found children Level----",parentId);
-        addComments(comment.children, parentId, text);
-    }
-
   }
 
   return (
-    <>
- <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-6">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-6">
       <h2 className="text-2xl font-semibold mb-4">💬 Nested Comments</h2>
-
+      {taskData && (
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-2">{taskData.name}</h2>
+          <p className="text-gray-700 mb-1"><strong>Description:</strong> {taskData.description}</p>
+          <p className="text-gray-700 mb-1"><strong>Status:</strong> {taskData.status}</p>
+          <p className="text-gray-700 mb-1"><strong>Priority:</strong> {taskData.priority}</p>
+          <p className="text-gray-700 mb-1"><strong>Project:</strong> {taskData.project?.projectname}</p>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <input
           type="text"
           value={input}
-          onChange={handleChange}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="Write a comment..."
           className="border border-gray-300 px-4 py-2 rounded-md w-full"
         />
@@ -91,15 +70,15 @@ const Comments = () => {
           Add Comment
         </button>
       </div>
-
       <div>
-        {comments.map((item) => (
-          <Comment key={item.id} comment={item} addReply={addReply} />
-        ))}
+        {comments && comments.length > 0 && (
+          comments.map((item) => (
+            <Comment key={item._id} comment={item} addReply={addReply} />
+          ))
+        )}
       </div>
     </div>
-    </>
-  )
-}
+  );
+};
 
-export default Comments
+export default Comments;

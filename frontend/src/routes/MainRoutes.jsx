@@ -19,7 +19,7 @@ const CreateTask = lazy(() => import('../components/admin/form/CreateTask'));
 const ViewTask = lazy(() => import('../components/admin/ViewTask'));
 const UpdateTask = lazy(() => import('../components/admin/form/UpdateTask'));
 const UpdateStatus = lazy(() => import('../components/admin/form/UpdateStatus'));
-const Comments = lazy(()=> import("../components/admin/Comments"))
+const Comments = lazy(()=> import("../components/admin/comments"))
 
 
 const MainRoutes = [

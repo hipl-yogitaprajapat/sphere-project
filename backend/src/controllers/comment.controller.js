@@ -1,23 +1,16 @@
-// import Comment from "../models/comment.model.js";
-// import Task from "../models/task.model.js";
-
 import Comment from "../models/comment.model.js";
 import Task from "../models/task.model.js";
 
 export const createComment = async (req, res) => {
   try {
     const { taskId, text, parentId } = req.body;
-    console.log(taskId,"taskId");
-    console.log(text,"text");
-    console.log(parentId,"parentId");
-    
-    const userId = req.user._id;
+    const userId = req.user._id;    
 
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
 
-    const isAuthorized = task.createdBy.toString() === userId.toString() ||
-                         task.assignedTo.some(uid => uid.toString() === userId.toString());
+    const isAuthorized = task.createdBy?.toString() === userId?.toString() ||
+                         task.assignedTo.some(uid => uid?.toString() === userId?.toString());
 
     if (!isAuthorized) {
       return res.status(403).json({ message: "You are not allowed to comment on this task" });
@@ -39,7 +32,9 @@ export const createComment = async (req, res) => {
       });
     }
 
-    res.status(201).json({ message: "Comment added", comment: savedComment });
+    const populatedComment = await savedComment.populate("user", "firstName lastName");
+
+    res.status(201).json({ message: "Comment added", comment: populatedComment });
   } catch (error) {
     console.error("Create comment error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -78,7 +73,6 @@ const populateChildren = async (comment) => {
     children.map(async (child) => await populateChildren(child))
   );
 
-  // Convert Mongoose doc to plain object so we can add children
   const commentObj = comment.toObject();
   commentObj.children = populatedChildren;
   return commentObj;
