@@ -56,7 +56,8 @@ export const createProject = async (req, res) => {
             description,
             priority,
             issue,
-            status
+            status,
+            createdBy: req.user._id,
         })
 
         if (newProject) {
@@ -76,7 +77,15 @@ export const createProject = async (req, res) => {
 
 export const viewProjects = async (req, res) => {
     try {
-        const projects = await Project.find();
+        const userId = req.user._id;
+        const userRole = req.user.role;
+
+        let projects;
+        if (userRole === "admin") {
+            projects = await Project.find().populate("createdBy", "firstName lastName");
+        } else if (userRole === "client") {
+            projects = await Project.find({ createdBy: userId }).populate("createdBy", "firstName lastName");
+        }
 
         if (!projects || projects.length === 0) {
             return res.status(404).json({ message: "No projects found", success: false });
@@ -91,28 +100,29 @@ export const viewProjects = async (req, res) => {
 
 export const editProject = async (req, res) => {
     const { projectname, description, issue, priority, status } = req.body;
-    const { id } = req.params;    
+    const { id } = req.params;
+    const userId = req.user._id;
 
     try {
         if (!projectname || !description || !priority || !issue || !status) {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
 
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found", success: false })}
+
+    if (project.createdBy.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "You are not authorized to edit this project", success: false })}
+
         const updateProject = await Project.findByIdAndUpdate(
             id,
             { projectname, description, issue, priority, status },
-            { new: true }
+            { new: true },
         )
-        
-        if (!updateProject) {
-            return res.status(404).json({ message: "Project not found", success: false });
-        }
 
-        return res.status(200).json({
-            message: "Project updated successfully",
-            success: true,
-            updateProject,
-        });
+        return res.status(200).json({message: "Project updated successfully",success: true,updateProject,});
 
     } catch (error) {
         console.log("error in edit project controller", error.message);
@@ -121,11 +131,11 @@ export const editProject = async (req, res) => {
 };
 
 export const deleteProject = async (req, res) => {
-    const { id } = req.params;    
+    const { id } = req.params;
     try {
         const deleteProject = await Project.findByIdAndDelete(id)
-         if (!deleteProject) return res.status(404).json({message: "Project not found",success: false});
-    
+        if (!deleteProject) return res.status(404).json({ message: "Project not found", success: false });
+
         return res.status(200).json({
             message: "Project deleted successfully",
             success: true,

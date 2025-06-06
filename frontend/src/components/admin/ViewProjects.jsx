@@ -42,6 +42,7 @@ const ViewProjects = () => {
                             <th style={{ width: '30%' }}>Description</th>
                             <th style={{ width: '15%' }}>Priority</th>
                             <th style={{ width: '15%' }}>Status</th>
+                            <th style={{ width: '15%' }}>Create By</th>
                             <th style={{ width: '15%' }}>Actions</th>
                         </tr>
                     </thead>
@@ -63,6 +64,9 @@ const ViewProjects = () => {
                                         <span className={`badge bg-${proj.status === 'active' ? 'success' : proj.status === 'completed' ? 'primary' : 'info'}`}>
                                             {proj.status}
                                         </span>
+                                    </td>
+                                    <td style={{ width: '15%' }}>
+                                    {(proj?.createdBy?.firstName +" "+ proj?.createdBy?.lastName)}
                                     </td>
                                     <td style={{ width: '15%' }}>
                                         <button onClick={()=>navigate(`/edit-project/${proj._id}`)} className="btn btn-sm btn-warning me-2">Edit</button>

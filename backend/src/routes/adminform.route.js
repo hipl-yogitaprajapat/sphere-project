@@ -7,9 +7,9 @@ import { authorizeTaskRoles } from "../middleware/task.middleware.js";
 const router = express.Router();
 
 router.post("/addusersform",protectRoute, adminOnly, adminUsersForm)
-router.post("/create-project",protectRoute, adminOnly, createProject)
-router.get("/view-projects",protectRoute, authorizeTaskRoles("admin"), viewProjects)
-router.put("/edit-project/:id",protectRoute, adminOnly, editProject)
-router.delete("/delete-project/:id",protectRoute, adminOnly, deleteProject)
+router.post("/create-project",protectRoute, authorizeTaskRoles("admin","client"), createProject)
+router.get("/view-projects",protectRoute, authorizeTaskRoles("admin","client"), viewProjects)
+router.put("/edit-project/:id",protectRoute, authorizeTaskRoles("admin","client"), editProject)
+router.delete("/delete-project/:id",protectRoute, authorizeTaskRoles("admin","client"), deleteProject)
 
 export default router
