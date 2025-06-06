@@ -11,9 +11,9 @@ const initialState = {
     comments: []
 }
 
-export const createNewComment = createAsyncThunk('createcomment', async ({ taskId, text}, { rejectWithValue }) => {
+export const createNewComment = createAsyncThunk('createcomment', async ({ taskId, text }, { rejectWithValue }) => {
     try {
-        const response = await services.createnewcomment({ taskId, text});
+        const response = await services.createnewcomment({ taskId, text });
         return response
     } catch (error) {
         const message = error.response?.data?.message || "New comment failed";
@@ -21,12 +21,12 @@ export const createNewComment = createAsyncThunk('createcomment', async ({ taskI
     }
 });
 
-export const addReplyComment = createAsyncThunk('addReplyComment', async ({ taskId, text,parentId}, { rejectWithValue }) => {
+export const addReplyComment = createAsyncThunk('addReplyComment', async ({ taskId, text, parentId }, { rejectWithValue }) => {
     try {
-        const response = await services.addreplycomment({ taskId, text,parentId});
+        const response = await services.addreplycomment({ taskId, text, parentId });
         return response
     } catch (error) {
-        const message = error.response?.data?.message || "New comment failed";
+        const message = error.response?.data?.message || "Reply comment failed";
         return rejectWithValue(message);
     }
 });
@@ -37,6 +37,27 @@ export const fetchComments = createAsyncThunk('fetchcomments', async ({ id }, { 
         return response
     } catch (error) {
         const message = error.response?.data?.message || "View User comments failed";
+        return rejectWithValue(message);
+    }
+});
+
+export const updateComments = createAsyncThunk('updateComment', async ({ commentId,text }, { rejectWithValue }) => {
+    try {
+        const response = await services.updatecomment({ commentId ,text});
+        return response
+    } catch (error) {
+        const message = error.response?.data?.message || "update comment failed";
+        return rejectWithValue(message);
+    }
+});
+
+
+export const deleteComments = createAsyncThunk('deleteComments', async ({ commentId }, { rejectWithValue }) => {
+    try {
+        const response = await services.deletecomment({ commentId});
+        return response
+    } catch (error) {
+        const message = error.response?.data?.message || "delete comment failed";
         return rejectWithValue(message);
     }
 });
@@ -62,14 +83,14 @@ const commetSlice = createSlice({
         builder.addCase(createNewComment.fulfilled, (state, action) => {
             state.loading = false;
             state.success = true;
-            state.comments.unshift(action.payload.comment); 
+            state.comments.unshift(action.payload.comment);
             state.message = action.payload.message;
         })
         builder.addCase(createNewComment.rejected, (state, action) => {
             state.loading = true
             state.error = action.payload;
         })
-          builder.addCase(addReplyComment.pending, (state) => {
+        builder.addCase(addReplyComment.pending, (state) => {
             state.loading = true;
             state.error = null;
             state.success = null;
@@ -79,9 +100,9 @@ const commetSlice = createSlice({
             state.loading = false;
             state.success = true;
             state.message = action.payload.message;
-             const newReply = action.payload.comment;
-             const parentId = newReply.parent; 
-             insertReply(state.comments, parentId, newReply); 
+            const newReply = action.payload.comment;
+            const parentId = newReply.parent;
+            insertReply(state.comments, parentId, newReply);
         })
         builder.addCase(addReplyComment.rejected, (state, action) => {
             state.loading = true
@@ -102,6 +123,38 @@ const commetSlice = createSlice({
         builder.addCase(fetchComments.rejected, (state, action) => {
             state.loading = false
             state.error = action.payload;
+        })
+        builder.addCase(updateComments.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(updateComments.fulfilled, (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.message = action.payload.message;
+        })
+        builder.addCase(updateComments.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
+
+        })
+        builder.addCase(deleteComments.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.success = null;
+
+        })
+        builder.addCase(deleteComments.fulfilled, (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.message = action.payload.message;
+        })
+        builder.addCase(deleteComments.rejected, (state, action) => {
+            state.loading = true
+            state.error = action.payload;
+
         })
     }
 })

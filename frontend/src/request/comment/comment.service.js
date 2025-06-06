@@ -24,3 +24,18 @@ export const viewcomment = async ({id}) => {
     return response.data; 
     
 };
+
+export const updatecomment = async ({commentId,text}) => {
+    const response = await axios.put(`${API_BASE_URL}comment/edit/${commentId}`,{text} ,{
+        withCredentials: true,
+    });
+    return response.data; 
+};
+
+
+export const deletecomment = async ({commentId}) => {
+    const response = await axios.delete(`${API_BASE_URL}comment/delete/${commentId}`,{
+        withCredentials: true,
+    });
+    return response.data; 
+};

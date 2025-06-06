@@ -40,7 +40,7 @@ export const viewTaskDetails = createAsyncThunk('viewtaskdetails', async (_, { r
         return response
 
     } catch (error) {
-        const message = error.response?.data?.message || "View User Projects failed";
+        const message = error.response?.data?.message || "View User Task failed";
         return rejectWithValue(message);
     }
 });
@@ -53,7 +53,7 @@ export const updateTask = createAsyncThunk('updatetask', async ({ id, formData }
 
 
     } catch (error) {
-        const message = error.response?.data?.message || "Edit User Projects failed";
+        const message = error.response?.data?.message || "Edit User Task failed";
         return rejectWithValue(message);
     }
 });
@@ -64,7 +64,7 @@ export const deleteTask = createAsyncThunk('deletetask', async ({ id }, { reject
         return response
 
     } catch (error) {
-        const message = error.response?.data?.message || "Edit User Projects failed";
+        const message = error.response?.data?.message || "Delete User Task failed";
         return rejectWithValue(message);
     }
 });
@@ -75,7 +75,7 @@ export const updateTaskStatus = createAsyncThunk('updatetaskstatus', async ({ id
         return response
 
     } catch (error) {
-        const message = error.response?.data?.message || "Edit User Projects failed";
+        const message = error.response?.data?.message || "Edit Task Status failed";
         return rejectWithValue(message);
     }
 });

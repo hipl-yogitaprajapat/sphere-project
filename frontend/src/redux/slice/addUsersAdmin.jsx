@@ -16,7 +16,7 @@ export const addAdminUsers = createAsyncThunk('addUser', async (clientInfo,{ rej
        return response  
       
   } catch (error) {
-    const message = error.response?.data?.message || "Signup failed";
+    const message = error.response?.data?.message || "Add user failed";
       return rejectWithValue(message);
   }
 });
@@ -27,7 +27,7 @@ export const createNewProject = createAsyncThunk('newProject', async (newProject
        return response  
       
   } catch (error) {
-    const message = error.response?.data?.message || "Signup failed";
+    const message = error.response?.data?.message || "Create new project failed";
       return rejectWithValue(message);
   }
 });
@@ -48,7 +48,7 @@ export const editProject = createAsyncThunk('editproject', async ({id,editProjec
        return response 
     
   } catch (error) {
-    const message = error.response?.data?.message || "Edit User Projects failed";
+    const message = error.response?.data?.message || "Edit User Project failed";
       return rejectWithValue(message);
   }
 });
@@ -59,7 +59,7 @@ export const deleteProject = createAsyncThunk('deleteproject', async ({id},{ rej
        return response 
     
   } catch (error) {
-    const message = error.response?.data?.message || "Edit User Projects failed";
+    const message = error.response?.data?.message || "Delete User Project failed";
       return rejectWithValue(message);
   }
 });

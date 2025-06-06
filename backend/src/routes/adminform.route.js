@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post("/addusersform",protectRoute, adminOnly, adminUsersForm)
 router.post("/create-project",protectRoute, adminOnly, createProject)
-router.get("/view-projects",protectRoute, authorizeTaskRoles("admin", "developer"), viewProjects)
+router.get("/view-projects",protectRoute, authorizeTaskRoles("admin"), viewProjects)
 router.put("/edit-project/:id",protectRoute, adminOnly, editProject)
 router.delete("/delete-project/:id",protectRoute, adminOnly, deleteProject)
 

@@ -77,3 +77,83 @@ const populateChildren = async (comment) => {
   commentObj.children = populatedChildren;
   return commentObj;
 };
+
+export const editComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { text } = req.body;
+    const userId = req.user._id;
+
+    const comment = await Comment.findById(commentId);
+    
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    if (comment.user.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "You can only edit your own comment" });
+    }
+
+    const task = await Task.findById(comment.taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isAssigned = task.assignedTo.some(uid => uid.toString() === userId.toString());
+
+    if (!isAssigned) {
+      return res.status(403).json({ message: "You are not authorized to edit comments on this task" });
+    }
+
+    comment.text = text;
+    const updatedComment = await comment.save();
+
+    const populated = await updatedComment.populate("user", "firstName lastName");
+    res.status(200).json({ message: "Comment updated successfully", comment: populated });
+  } catch (error) {
+    console.error("Edit comment error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const userId = req.user._id;
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    if (comment.user.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "You can only delete your own comment" });
+    }
+
+    // Remove reference from parent comment (if it has one)
+    if (comment.parent) {
+      await Comment.findByIdAndUpdate(comment.parent, {
+        $pull: { children: comment._id },
+      });
+    }
+
+    // Recursively delete all child comments
+    const deleteChildrenRecursively = async (parentId) => {
+      const children = await Comment.find({ parent: parentId });
+      for (const child of children) {
+        await deleteChildrenRecursively(child._id);
+        await Comment.findByIdAndDelete(child._id);
+      }
+    };
+
+    await deleteChildrenRecursively(comment._id);
+
+    // Delete the main comment
+    await Comment.findByIdAndDelete(commentId);
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Delete comment error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

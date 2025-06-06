@@ -38,7 +38,7 @@ const ViewTask = () => {
 
       <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #dee2e6' }}>
         <table className="table table-bordered table-striped align-middle mb-0 text-nowrap">
-          <thead className="table-dark text-center">
+          <thead className="table-dark text-center" style={{ position: 'sticky', top: 0, zIndex: 1, background: '#343a40' }}>
             <tr>
               <th>Sr No.</th>
               <th>Task Name</th>

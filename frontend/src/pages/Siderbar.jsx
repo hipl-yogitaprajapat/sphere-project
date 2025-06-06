@@ -32,7 +32,7 @@ const Sidebar = () => {
               {role === "client" && (
                 <>
                   <li class="pc-item">
-                    <Link to="/client-project" class="pc-link">
+                    <Link to="/create-project" class="pc-link">
                       <span class="pc-micon"><i class="ti ti-typography"></i></span>
                       <span class="pc-mtext">New Project</span>
                     </Link>
