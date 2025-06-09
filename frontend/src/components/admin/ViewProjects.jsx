@@ -3,14 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { deleteProject, viewProjects } from '../redux/slice/addUsersAdmin';
 import { useNavigate } from 'react-router-dom';
 import { handleError, handleSuccess } from '../../utils/Error';
-import { deleteProject, viewProjects } from '../../redux/slice/addUsersAdmin';
+import { deleteProject, resetProjects, viewProjects } from '../../redux/slice/addUsersAdmin';
 
 const ViewProjects = () => {  
     const dispatch = useDispatch()
     const navigate = useNavigate();
-    const { projects } = useSelector((state) => state.admin);
+    const { projects,loading } = useSelector((state) => state.admin);
 
     useEffect(() => {
+        dispatch(resetProjects());
         dispatch(viewProjects());
     }, [dispatch]);
 
@@ -48,6 +49,14 @@ const ViewProjects = () => {
                     </thead>
                 </table>
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    {loading ? (
+                        <div className="text-center py-3">
+                            <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
+                            <span className="ms-2">Loading projects...</span>
+                        </div>
+                    ) : projects.length === 0 ? (
+                        <div className="text-center py-3">No projects found.</div>
+                    ) : (
                     <table className="table table-striped table-bordered" style={{ tableLayout: 'fixed', width: '100%' }}>
                         <tbody>
                             {projects.map((proj, index) => (
@@ -76,6 +85,7 @@ const ViewProjects = () => {
                             ))}
                         </tbody>
                     </table>
+                    )}
                 </div>
             </div>
         </div>

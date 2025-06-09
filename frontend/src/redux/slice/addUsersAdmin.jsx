@@ -74,6 +74,9 @@ const adimnUserSlice = createSlice({
             state.message = "";
             return state
         },
+        resetProjects: (state) => {
+            state.projects = [];
+    },
     },
     extraReducers: (builder) => {
         builder.addCase(addAdminUsers.pending, (state) => {
@@ -154,5 +157,5 @@ const adimnUserSlice = createSlice({
         })
     }
 })
-export const { clearMessages } = adimnUserSlice.actions;
+export const { clearMessages,resetProjects } = adimnUserSlice.actions;
 export default adimnUserSlice.reducer;

@@ -85,7 +85,6 @@ const UserForm = () => {
                                             required
                                         >
                                             <option>-- Select Role --</option>
-                                            <option value="client">Client</option>
                                             <option value="designer">Designer</option>
                                             <option value="tester">Tester</option>
                                             <option value="developer">Developer</option>

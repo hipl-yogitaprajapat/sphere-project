@@ -77,16 +77,14 @@ export const createProject = async (req, res) => {
 
 export const viewProjects = async (req, res) => {
     try {
-        const userId = req.user._id;
         const userRole = req.user.role;
 
         let projects;
         if (userRole === "admin") {
-            projects = await Project.find().populate("createdBy", "firstName lastName");
-        } else if (userRole === "client") {
-            projects = await Project.find({ createdBy: userId }).populate("createdBy", "firstName lastName");
+            projects = await Project.find().populate("createdBy", "firstName lastName email");
+        } else {
+            return res.status(403).json({ message: "Unauthorized role", success: false });
         }
-
         if (!projects || projects.length === 0) {
             return res.status(404).json({ message: "No projects found", success: false });
         }

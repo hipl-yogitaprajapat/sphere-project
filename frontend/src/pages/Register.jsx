@@ -86,7 +86,6 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
                     >
                       <option>-- Select Role --</option>
                       <option value="tester">Tester</option>
-                      <option value="client">Client</option>
                       <option value="developer">Developer</option>
                       <option value="admin">Admin</option>
                       <option value="designer">Designer</option>

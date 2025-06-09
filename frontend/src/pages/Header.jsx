@@ -13,14 +13,11 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             const response = await dispatch(LogoutUser()).unwrap();
-            console.log(response, "response");
-
             handleSuccess(response.message);
             setTimeout(() => navigate("/login"), 1000);
         } catch (err) {
             handleError(err);
             console.log("failed");
-
         }
     }
     return (

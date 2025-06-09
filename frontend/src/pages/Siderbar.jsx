@@ -29,16 +29,6 @@ const Sidebar = () => {
                 <label>Form Components</label>
                 <i class="ti ti-dashboard"></i>
               </li>
-              {role === "client" && (
-                <>
-                  <li class="pc-item">
-                    <Link to="/create-project" class="pc-link">
-                      <span class="pc-micon"><i class="ti ti-typography"></i></span>
-                      <span class="pc-mtext">New Project</span>
-                    </Link>
-                  </li>
-                </>
-              )}
               {role === "admin" && (
                 <>
                   <li class="pc-item">
@@ -63,11 +53,7 @@ const Sidebar = () => {
                       <span class="pc-mtext">View Projects</span>
                     </Link>
                   </li>
-                </>
-              )}
-              {(role === "admin") && (
-                <>
-                  <li class="pc-item pc-caption">
+                    <li class="pc-item pc-caption">
                     <label>Task Management</label>
                     <i class="ti ti-dashboard"></i>
                   </li>
