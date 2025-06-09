@@ -2,19 +2,19 @@ import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_APP_API_URL;
 
 
-export const createnewcomment = async ({taskId,text}) => {
-    const response = await axios.post(`${API_BASE_URL}comment/create`, {taskId,text}, {
+export const createnewcomment = async (formData) => {
+    const response = await axios.post(`${API_BASE_URL}comment/create`, formData, {
         withCredentials: true
     });
     return response.data;    
 };
 
 
-export const addreplycomment = async ({taskId,text,parentId}) => {
-    const response = await axios.post(`${API_BASE_URL}comment/create`, {taskId,text,parentId}, {
+export const addreplycomment = async (formData) => {
+    const response = await axios.post(`${API_BASE_URL}comment/create`, formData, {
         withCredentials: true
     });
-    return response.data;    
+    return response.data;        
 };
 
 export const viewcomment = async ({id}) => {
@@ -25,8 +25,8 @@ export const viewcomment = async ({id}) => {
     
 };
 
-export const updatecomment = async ({commentId,text}) => {
-    const response = await axios.put(`${API_BASE_URL}comment/edit/${commentId}`,{text} ,{
+export const updatecomment = async ({commentId,formData}) => {
+    const response = await axios.put(`${API_BASE_URL}comment/edit/${commentId}`,{formData} ,{
         withCredentials: true,
     });
     return response.data; 

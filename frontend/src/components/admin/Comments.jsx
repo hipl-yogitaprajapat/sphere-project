@@ -5,10 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { viewTaskDetails } from "../../redux/slice/taskSlice";
 import { addReplyComment, createNewComment, deleteComments, fetchComments, updateComments } from "../../redux/slice/commentSlice";
 import { handleError, handleSuccess } from "../../utils/Error";
+import { useRef } from "react";
 
 const Comments = () => {
   const { id } = useParams();
   const [input, setInput] = useState('');
+  const [File, setFile] = useState(null);
+  const fileInputRef = useRef(null);
   const { task } = useSelector((state) => state.tasks);
   const taskData = task.find((t) => t._id === id);
   const { comments = [] } = useSelector((state) => state.comment);
@@ -22,20 +25,28 @@ const Comments = () => {
 
   const handleNewComment = async () => {
     try {
-      const taskId = id;
-      const text = input;
-      const response = await dispatch(createNewComment({ taskId, text })).unwrap();
+      const formData = new FormData();
+      formData.append("text", input);
+      formData.append("taskId", id);
+      if (File) {
+        formData.append("attachment", File);
+      }      
+      const response = await dispatch(createNewComment(formData)).unwrap();
       handleSuccess(response.message);
+      await dispatch(fetchComments({ id }));
       setInput("");
+      setFile(null);
+       if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     } catch (error) {
       handleError(error);
     }
   }
 
-  const addReply = async (parentId, text) => {
+  const addReply = async (formData) => {
     try {
-      const taskId = id;
-      const response = await dispatch(addReplyComment({ taskId, text, parentId })).unwrap();
+      const response = await dispatch(addReplyComment(formData)).unwrap();
       handleSuccess(response.message);
       await dispatch(fetchComments({ id }));
     } catch (error) {
@@ -43,9 +54,9 @@ const Comments = () => {
     }
   }
 
-  const updateComment = async (commentId, text) => {
+  const updateComment = async (commentId, formData) => {
     try {
-      const response = await dispatch(updateComments({ commentId, text })).unwrap();
+      const response = await dispatch(updateComments({ commentId, formData })).unwrap();
       handleSuccess(response.message);
       await dispatch(fetchComments({ id }));
     } catch (error) {
@@ -53,7 +64,7 @@ const Comments = () => {
     }
   }
 
-    const deleteComment = async (commentId) => {
+  const deleteComment = async (commentId) => {
     try {
       const response = await dispatch(deleteComments({ commentId })).unwrap();
       handleSuccess(response.message);
@@ -83,6 +94,12 @@ const Comments = () => {
             placeholder="Write a comment..."
             className="border border-gray-300 px-4 py-2 rounded-md w-full"
           />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={(e) => setFile(e.target.files[0])}
+            className="w-[180px] border border-gray-300 rounded-md px-3 py-2"
+          />
           <button
             onClick={handleNewComment}
             className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
@@ -95,7 +112,7 @@ const Comments = () => {
       <div>
         {comments && comments.length > 0 && (
           comments.map((item) => (
-            <Comment key={item._id} comment={item} addReply={addReply} updateComment={updateComment} deleteComment={deleteComment}/>
+            <Comment key={item._id} comment={item} addReply={addReply} updateComment={updateComment} deleteComment={deleteComment} />
           ))
         )}
       </div>

@@ -1,5 +1,8 @@
+import { validateFile } from "../lib/fileValidator.js";
 import Comment from "../models/comment.model.js";
 import Task from "../models/task.model.js";
+import fs from "fs";
+import path from "path";
 
 export const createComment = async (req, res) => {
   try {
@@ -9,6 +12,8 @@ export const createComment = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: "Task not found" });
 
+    const filename = req.file ? validateFile(req.file,['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx'],5) : null;
+
     const isAuthorized = task.createdBy?.toString() === userId?.toString() ||
                          task.assignedTo.some(uid => uid?.toString() === userId?.toString());
 
@@ -16,18 +21,24 @@ export const createComment = async (req, res) => {
       return res.status(403).json({ message: "You are not allowed to comment on this task" });
     }
 
+    let normalizedParentId = null;
+    if (parentId && parentId !== "null" && parentId !== "undefined" && parentId.trim() !== "") {
+      normalizedParentId = parentId;
+    }
+    
     const newComment = new Comment({
       taskId,
       user: userId,
       text,
-      parent: parentId || null,
+      attachments: filename,
+      ...(normalizedParentId && { parent: normalizedParentId }),
     });
 
     const savedComment = await newComment.save();
 
     // If it's a reply, update parent's children
-    if (parentId) {
-      await Comment.findByIdAndUpdate(parentId, {
+    if (normalizedParentId) {
+      await Comment.findByIdAndUpdate(normalizedParentId, {
         $push: { children: savedComment._id }
       });
     }
@@ -103,6 +114,18 @@ export const editComment = async (req, res) => {
 
     if (!isAssigned) {
       return res.status(403).json({ message: "You are not authorized to edit comments on this task" });
+    }
+
+       if (req.file) {
+      const newFileName = validateFile(req.file, ['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx'], 5);
+
+      if (comment.attachments) {
+        const oldFilePath = path.join("uploads", comment.attachments);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+      comment.attachments = newFileName;
     }
 
     comment.text = text;

@@ -15,6 +15,9 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    attachments: {
+        type: String,
+    },
     parent: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",

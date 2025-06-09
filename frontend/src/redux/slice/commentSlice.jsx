@@ -11,9 +11,9 @@ const initialState = {
     comments: []
 }
 
-export const createNewComment = createAsyncThunk('createcomment', async ({ taskId, text }, { rejectWithValue }) => {
+export const createNewComment = createAsyncThunk('createcomment', async ( formData , { rejectWithValue }) => {
     try {
-        const response = await services.createnewcomment({ taskId, text });
+        const response = await services.createnewcomment( formData );
         return response
     } catch (error) {
         const message = error.response?.data?.message || "New comment failed";
@@ -21,9 +21,9 @@ export const createNewComment = createAsyncThunk('createcomment', async ({ taskI
     }
 });
 
-export const addReplyComment = createAsyncThunk('addReplyComment', async ({ taskId, text, parentId }, { rejectWithValue }) => {
+export const addReplyComment = createAsyncThunk('addReplyComment', async (formData, { rejectWithValue }) => {
     try {
-        const response = await services.addreplycomment({ taskId, text, parentId });
+        const response = await services.addreplycomment(formData);
         return response
     } catch (error) {
         const message = error.response?.data?.message || "Reply comment failed";
@@ -41,9 +41,9 @@ export const fetchComments = createAsyncThunk('fetchcomments', async ({ id }, { 
     }
 });
 
-export const updateComments = createAsyncThunk('updateComment', async ({ commentId,text }, { rejectWithValue }) => {
+export const updateComments = createAsyncThunk('updateComment', async ({ commentId,formData }, { rejectWithValue }) => {
     try {
-        const response = await services.updatecomment({ commentId ,text});
+        const response = await services.updatecomment({ commentId ,formData});
         return response
     } catch (error) {
         const message = error.response?.data?.message || "update comment failed";
