@@ -1,3 +1,4 @@
+import { getFormattedDateTime } from "../lib/formatDateTime.js";
 import { validateImage } from "../lib/imageValidator.js";
 import Project from "../models/newproject.js";
 import Task from "../models/task.model.js";
@@ -81,6 +82,10 @@ export const updateTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
+    if (task.locked) {
+      return res.status(403).json({ message: "Approved task cannot be updated" });
+    }
+
     const projectExists = await Project.findById(project);
     if (!projectExists) {
       return res.status(404).json({ message: "Project not found" });
@@ -131,6 +136,10 @@ export const deleteTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
+    if (task.locked) {
+      return res.status(403).json({ message: "Approved task cannot be deleted" });
+    }
+
     await Task.findByIdAndDelete(id);
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
@@ -142,7 +151,8 @@ export const deleteTask = async (req, res) => {
 export const updateTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status,feedback } = req.body; 
+     const { date, time } = getFormattedDateTime();   
 
     const task = await Task.findById(id);
     if (!task) {
@@ -156,12 +166,53 @@ export const updateTaskStatus = async (req, res) => {
     }
 
     task.status = status;
+
+      if (feedback) {
+      task.feedbacks.push({
+        user: req.user._id,
+        feedback: feedback,
+        date,
+        time
+      });
+    }
+
     await task.save();
 
     res.status(200).json({ message: "Status updated successfully", task ,success: true});
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).json({ message: "Server error", error: error.message ,success: false });
+  }
+};
+
+export const reviewTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action } = req.body;
+
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can perform this action" });
+    }
+
+    const task = await Task.findById(id);
+    
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    if (action === "approve") {
+      task.reviewStatus = "approved";
+      task.locked = true;
+    } else if (action === "reject") {
+      task.reviewStatus = "rejected";
+      task.locked = false;
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    await task.save();
+    res.status(200).json({ message: `Task ${action}d successfully`, task });
+  } catch (err) {
+    console.error("Error in reviewTask:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 

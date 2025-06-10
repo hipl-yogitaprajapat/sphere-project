@@ -38,6 +38,23 @@ const taskSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+    },
+    feedbacks: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            feedback: { type: String },
+            date: { type: String },
+            time: { type: String },
+        },
+    ],
+    reviewStatus: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+        default: "pending",
+    },
+    locked: {
+        type: Boolean,
+        default: false,
     }
 }, { timestamps: true });
 

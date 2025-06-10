@@ -1,4 +1,5 @@
-export const RedirectPath = (role) => {
+export const RedirectPath = () => {
+  const role = localStorage.getItem("role");
     
     switch (role) {
         case "admin": return "/admin";

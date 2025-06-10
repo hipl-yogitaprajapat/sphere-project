@@ -27,7 +27,6 @@ const UpadteTask = () => {
 
     const { projects } = useSelector((state) => state.admin);
     const { task } = useSelector((state) => state.tasks);
-    const userRole = (localStorage.getItem("role"));
     useEffect(() => {
         dispatch(viewTaskDetails());
     }, [dispatch]);
@@ -91,7 +90,7 @@ const UpadteTask = () => {
         try {
             const response = await dispatch(updateTask({id, formData})).unwrap();
             handleSuccess(response.message);
-            navigate(RedirectPath(userRole));
+            navigate(RedirectPath());
         } catch (err) {
             handleError(err);
         }

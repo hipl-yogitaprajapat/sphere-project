@@ -26,7 +26,7 @@ export const viewcomment = async ({id}) => {
 };
 
 export const updatecomment = async ({commentId,formData}) => {
-    const response = await axios.put(`${API_BASE_URL}comment/edit/${commentId}`,{formData} ,{
+    const response = await axios.put(`${API_BASE_URL}comment/edit/${commentId}`,formData,{
         withCredentials: true,
     });
     return response.data; 
