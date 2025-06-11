@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { viewProfile } from '../redux/slice/authSlice';
-// import { viewProfile } from '../components/redux/slice/authSlice';
 
 
 const ViewProfile = () => {

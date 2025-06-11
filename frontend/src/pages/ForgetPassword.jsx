@@ -3,7 +3,6 @@ import { ToastContainer } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { handleError, handleSuccess } from '../utils/Error';
 import { ForgetPasswordUser } from '../redux/slice/authSlice';
-// import { ForgetPasswordUser } from '../components/redux/slice/authSlice';
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState({

@@ -11,8 +11,6 @@ const initialState = {
     profile:null,
 }
 
-// const url = import.meta.env.VITE_APP_API_URL;
-
 export const SignupUser = createAsyncThunk('signup', async (registerInfo,{ rejectWithValue }) => {
       try {
     const response = await services.signup(registerInfo);

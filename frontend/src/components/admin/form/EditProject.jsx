@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-// import { editProject, viewProjects } from '../../redux/slice/addUsersAdmin'
 import { handleError, handleSuccess } from '../../../utils/Error'
 import { editProject, viewProjects } from '../../../redux/slice/addUsersAdmin'
 

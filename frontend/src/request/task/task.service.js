@@ -46,7 +46,7 @@ export const updatetaskstatus = async ({id,taskstatusInfo}) => {
 };
 
 export const updatereview = async ({taskId, action}) => { 
-    const response = await axios.put(`${API_BASE_URL}task/review-status/${taskId}`,action, {
+    const response = await axios.put(`${API_BASE_URL}task/review-status/${taskId}`,{action}, {
         withCredentials: true,
     });
     return response.data; 

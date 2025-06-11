@@ -13,7 +13,6 @@ function ProtectedRoute({ setIsAuthenticated }) {
                 location.pathname === '/login' ||
                 location.pathname === '/register'
             ) {
-                // navigate('/dashboard', { replace: false });
                 if (role === 'client') {
                     navigate('/client', { replace: false });
                 } else if (role === 'developer') {

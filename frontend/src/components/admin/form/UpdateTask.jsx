@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { handleError, handleSuccess } from '../../../utils/Error';
@@ -8,8 +8,6 @@ import { RedirectPath } from '../../../utils/RedirectPath';
 
 const UpadteTask = () => {
     const { id } = useParams();
-    console.log(id, "paramsid");
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [filteredUsers, setFilteredUsers] = useState([]);

@@ -3,8 +3,6 @@ import ProtectedRoute from '../utils/ProtectedRoute'
 import { Suspense, useState } from 'react'
 import MainRoutes from './MainRoutes';
 
-
-
 const Routers = () => {
      const [isAuthenticated, setIsAuthenticated] = useState(false);     
 

@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteTask, updateReview, updateTaskStatus, viewTaskDetails } from '../../redux/slice/taskSlice';
 import { handleError, handleSuccess } from '../../utils/Error';
 import { RedirectPath } from '../../utils/RedirectPath';
+import { ToastContainer } from 'react-toastify';
 
 const ViewTask = () => {
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { task } = useSelector((state) => state.tasks);
+  const { task } = useSelector((state) => state.tasks);  
   const IMAGE_BASE_URL = import.meta.env.VITE_APP_IMAGE_URL;
   useEffect(() => {
     dispatch(viewTaskDetails());
@@ -26,8 +27,6 @@ const ViewTask = () => {
   }
 
   const handleReview = async (taskId, action) => {
-    console.log(taskId,"taskId");
-    console.log(action,"action"); 
   try {
     const response = await dispatch(updateReview({taskId, action })).unwrap();
     handleSuccess(response.message);
@@ -39,7 +38,8 @@ const ViewTask = () => {
 
   return (
     <>
-      <div className="container mt-4">
+    <ToastContainer/>
+      <div className="container mt-18">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h4 className="mb-0">All Tasks</h4>
           {role === "admin" && (
@@ -48,7 +48,6 @@ const ViewTask = () => {
             </button>
           )}
         </div>
-
         <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #dee2e6' }}>
           <table className="table table-bordered table-striped align-middle mb-0 text-nowrap">
             <thead className="table-dark text-center" style={{ position: 'sticky', top: 0, zIndex: 1, background: '#343a40' }}>
@@ -75,7 +74,7 @@ const ViewTask = () => {
             <tbody>
               {Array.isArray(task) && task.length > 0 ? (
                 task.map((taskItem, index) => (
-                  <tr key={taskItem._id} className="text-center">
+                  <tr key={taskItem._id} className={`text-center ${taskItem.reviewStatus === 'approved' ? 'bg-gray-200 text-gray-800 pointer-events-none opacity-20 backdrop-blur-sm' : ''}`}>
                     <td>{index + 1}</td>
                     <td className="text-start">{taskItem.name}</td>
                     <td>{taskItem.project?.projectname || 'N/A'}</td>
@@ -159,8 +158,8 @@ const ViewTask = () => {
                             onChange={(e) =>handleReview(taskItem._id, e.target.value)}
                           >
                             <option value="" disabled>Review</option>
-                            <option value="approved">Approve</option>
-                            <option value="rejected">Reject</option>
+                            <option value="approve">Approved</option>
+                            <option value="reject">Rejected</option>
                           </select>
                         </>
                       }

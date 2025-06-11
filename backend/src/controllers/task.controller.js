@@ -188,7 +188,11 @@ export const updateTaskStatus = async (req, res) => {
 export const reviewTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { action } = req.body;
+    const  {action}  = req?.body || {};
+    
+    if (!action) {
+    return res.status(400).json({ message: "Missing 'action' in request body" });
+  }
 
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Only admins can perform this action" });

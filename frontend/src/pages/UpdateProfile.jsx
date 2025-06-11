@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { handleError, handleSuccess } from '../utils/Error';
 import { UpdateUserProfile } from '../redux/slice/authSlice';
-// import { UpdateUserProfile } from '../components/redux/slice/authSlice';
 
 
 const UpdateProfile = () => {

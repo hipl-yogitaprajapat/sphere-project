@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import { createNewTask, viewUsersByRole } from '../../redux/slice/taskSlice';
 import { createNewTask, viewUsersByRole } from "../../../redux/slice/taskSlice"
 import { handleError, handleSuccess } from '../../../utils/Error';
 import Select from "react-select"
 import { viewProjects } from '../../../redux/slice/addUsersAdmin';
+import { ToastContainer } from 'react-toastify';
 
 const CreateTask = () => {
     const navigate = useNavigate();
@@ -86,7 +86,9 @@ const CreateTask = () => {
     }));
 
     return (
-        <div className="container mt-3">
+        <>
+        <ToastContainer/>
+         <div className="container mt-3">
             <h4>Create New Task</h4>
             <form onSubmit={handleSubmit}>
                 <div className="row mb-3">
@@ -196,6 +198,7 @@ const CreateTask = () => {
                 <button type="submit" className="btn btn-success mt-3">Create Task</button>
             </form>
         </div>
+        </>   
     );
 };
 
