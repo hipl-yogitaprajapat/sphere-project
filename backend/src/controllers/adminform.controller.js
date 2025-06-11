@@ -1,4 +1,5 @@
 import Project from "../models/newproject.js";
+import Task from "../models/task.model.js";
 import User from "../models/user.model.js"
 import bcrypt from "bcrypt";
 export const adminUsersForm = async (req, res) => {
@@ -25,7 +26,6 @@ export const adminUsersForm = async (req, res) => {
             role,
             password: hashPassword
         })
-        console.log(newUser, "newUser");
 
         if (newUser) {
             await newUser.save();
@@ -145,4 +145,36 @@ export const deleteProject = async (req, res) => {
         res.status(500).json({ message: "Internal server error", success: false })
     }
 };
+
+export const dashboardSummary = async (req, res) => {
+  try {
+    const totalProjects = await Project.countDocuments();
+    const totalTasks = await Task.countDocuments();
+
+    const totalApprovedTasks = await Task.countDocuments({ reviewStatus: "approved" });
+    const totalRejectedTasks = await Task.countDocuments({ reviewStatus: "rejected" });
+
+    const totalDevelopers = await User.countDocuments({ role: "developer" });
+    const totalTesters = await User.countDocuments({ role: "tester" });
+    const totalDesigners = await User.countDocuments({ role: "designer" });
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin summary fetched successfully",
+      data: {
+        totalProjects,
+        totalTasks,
+        totalDevelopers,
+        totalTesters,
+        totalDesigners,
+        totalApprovedTasks,
+        totalRejectedTasks,
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching admin summary:", error.message);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 

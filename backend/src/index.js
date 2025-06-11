@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
-import adminFormsRoutes from "./routes/adminform.route.js";
+import adminRoutes from "./routes/adminform.route.js";
 import taskRoute from "./routes/task.route.js";
 import getAllUser from "./routes/user.route.js";
 import commentRoutes from "./routes/comment.route.js";
@@ -22,7 +22,7 @@ app.use(
 );
 
 app.use("/api/auth",authRoutes)
-app.use("/api/admin",adminFormsRoutes)
+app.use("/api/admin",adminRoutes)
 app.use("/api/task",taskRoute)
 app.use("/api/comment",commentRoutes)
 app.use("/api",getAllUser)
