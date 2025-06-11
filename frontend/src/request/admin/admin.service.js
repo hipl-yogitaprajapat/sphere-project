@@ -46,3 +46,10 @@ export const deleteproject = async ({id}) => {
     });
     return response.data;    
 };
+
+export const viewAdmindashboard = async () => { 
+    const response = await axios.get(`${API_BASE_URL}admin/dashboard`, {
+        withCredentials: true,
+    });
+    return response.data;  
+};
