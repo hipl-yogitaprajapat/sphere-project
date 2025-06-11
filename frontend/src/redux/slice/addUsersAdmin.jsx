@@ -8,7 +8,8 @@ const initialState = {
     error: null,
     success: null,
     token: null,
-    projects:[]
+    projects:[],
+    dashboard:null
 }
 export const addAdminUsers = createAsyncThunk('addUser', async (clientInfo,{ rejectWithValue }) => {
       try {
@@ -60,6 +61,16 @@ export const deleteProject = createAsyncThunk('deleteproject', async ({id},{ rej
     
   } catch (error) {
     const message = error.response?.data?.message || "Delete User Project failed";
+      return rejectWithValue(message);
+  }
+});
+
+export const viewAdminDashboard = createAsyncThunk('viewAdminDashboard', async (_,{ rejectWithValue }) => {
+      try {
+    const response = await services.viewAdmindashboard();
+       return response  
+  } catch (error) {
+    const message = error.response?.data?.message || "View User Profile failed";
       return rejectWithValue(message);
   }
 });
@@ -154,6 +165,22 @@ const adimnUserSlice = createSlice({
         builder.addCase(deleteProject.rejected, (state, action) => {
             state.loading = true
             state.error = action.payload;
+        })
+        builder.addCase(viewAdminDashboard.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                    state.success = null;
+        
+        })
+        builder.addCase(viewAdminDashboard.fulfilled, (state, action) => {   
+                    state.loading = false;
+                    state.success = true;
+                    state.dashboard = action.payload.data;
+                    state.message = action.payload.message;
+        })
+        builder.addCase(viewAdminDashboard.rejected, (state, action) => {
+                    state.loading = false
+                    state.error = action.payload;
         })
     }
 })

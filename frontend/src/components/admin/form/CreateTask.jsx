@@ -75,7 +75,7 @@ const CreateTask = () => {
         try {
             const response = await dispatch(createNewTask(formData)).unwrap();
             handleSuccess(response.message);
-            navigate('/admin');
+            setTimeout(() => navigate("/admin"), 1000);
         } catch (err) {
             handleError(err);
         }

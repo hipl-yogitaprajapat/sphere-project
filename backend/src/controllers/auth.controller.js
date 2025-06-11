@@ -31,7 +31,6 @@ export const signup = async (req, res) => {
             role,
             password: hashPassword
         })
-        // console.log(newUser,"newUser");
 
         if (newUser) {
             // generateToken(newUser._id, res);
@@ -64,13 +63,11 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
         const user = await User.findOne({ email });
-        // console.log(user, "user");
 
         if (!user) {
             res.status(400).json({ message: "Invaild Credentials", success: false })
         }
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        // console.log(isPasswordCorrect,"isPasswordCorrect");
 
         if (!isPasswordCorrect) {
             res.status(400).json({ message: "Invaild Credentials", success: false })
@@ -214,7 +211,6 @@ export const checkAuth = (req, res) => {
 export const googleLogin = async (req, res) => {
     try {
         const { code } = req.query;
-        console.log(code, "code");
 
         const googleRes = await oauth2client.getToken(code);
         oauth2client.setCredentials(googleRes.tokens)
@@ -247,7 +243,6 @@ export const updateProfile = async (req, res) => {
         if (!firstName || !lastName || !company || !password || !req.file) {
             return res.status(400).json({ message: "All fields are required", success: false })
         }
-        console.log(req.file, "image")
 
         if (req.file) {
             // Validate file type
@@ -286,8 +281,6 @@ export const updateProfile = async (req, res) => {
         }
 
         if (req.file) {
-            console.log(req.file, "img");
-
             if (user.image && fs.existsSync(`uploads/${user.image}`)) {
                 fs.unlinkSync(`uploads/${user.image}`);
             }
